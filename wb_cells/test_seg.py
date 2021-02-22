@@ -40,7 +40,8 @@ with open(args.model_file, 'r+') as f:
 
 
 # model_names = ['single-net-Unet-bone-efficientnetb5-pre-True-epoch-2400-batch-4-lr-0.0001-dim-800-train-1100-rot-0-set-cell_cycle_1984_v2-ext-True-loss-focal+dice-up-upsampling-filters-256-red_factor-1.0-pyr_agg-sum-bk-1.0-fl_weight-4.0-fv-1']
-index = args.index
+# index = args.index
+index = 2
 model_name = model_names[index]
 epoch = epoch_list[index]
 
@@ -90,7 +91,7 @@ DATA_DIR = '/data/datasets/{}'.format(dataset)
 image_dir = DATA_DIR+'/{}'.format('images')
 masks_dir = DATA_DIR+'/{}'.format('seg_maps')
 
-if data_version <1:
+if data_version < 1:
 	train_fns = read_txt(DATA_DIR+'/train_list.txt')
 	valid_fns = read_txt(DATA_DIR+'/valid_list.txt')
 	test_fns = read_txt(DATA_DIR+'/test_list.txt')
@@ -141,7 +142,8 @@ class Dataset:
 		mask = io.imread(self.masks_fps[i])
 		# image to RGB
 		image = np.uint8((image-image.min())*255/(image.max()-image.min()))
-		image = np.stack([image,image,image],axis =-1)
+		if len(image.shape) == 2:
+			image = np.stack([image,image,image],axis =-1)
 #         print(np.unique(mask))
 		# extract certain classes from mask (e.g. cars)
 		masks = [(mask == v) for v in self.class_values]
@@ -280,7 +282,7 @@ for subset in subsets:
 		image_dir, 
 		masks_dir,
 		file_names = img_fns,
-		classes=CLASSES, 
+		classes=CLASSES,
 		augmentation=get_validation_augmentation(test_dim1,test_dim2),
 		preprocessing=get_preprocessing(preprocess_input),
 	)

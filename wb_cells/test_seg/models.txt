@@ -1,2 +1,3 @@
 net-Unet-bone-efficientnetb0-pre-True-epoch-2400-batch-2-lr-0.0001-dim-1024-train-None-rot-0-set-wbc_1024x1024-dv-0-loss-focal+dice-up-upsampling-filters-256-rf-1.0-bk-0.5-flw-4.0-fv-None-new-False, 46
 net-Unet-bone-efficientnetb1-pre-True-epoch-2400-batch-2-lr-0.0001-dim-928-train-None-rot-0-set-wbc_1024x1024-dv-0-loss-focal+dice-up-upsampling-filters-256-rf-1.0-bk-0.5-flw-4.0-fv-None-new-False, 31
+net-Unet-bone-efficientnetb0-pre-True-epoch-2400-batch-2-lr-0.0001-dim-1024-train-None-rot-0-set-wbc2_1024x1024-dv-0-loss-ce-up-upsampling-filters-256-rf-1.0-bk-1.0-flw-4.0-fv-None-new-False, 118

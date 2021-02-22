@@ -38,7 +38,7 @@ parser.add_argument("--feat_version", type=int, default = None)
 parser.add_argument("--epoch", type=int, default = 2)
 parser.add_argument("--dim", type=int, default = 512)
 parser.add_argument("--batch_size", type=int, default = 2)
-parser.add_argument("--dataset", type=str, default = 'wbc_1024x1024')
+parser.add_argument("--dataset", type=str, default = 'wbc2_1024x1024')
 parser.add_argument("--data_version", type=int, default = 0)
 parser.add_argument("--upsample", type=str, default = 'upsampling')
 parser.add_argument("--filters", type=int, default = 256)
@@ -124,7 +124,8 @@ class Dataset:
         mask = io.imread(self.masks_fps[i])
         # image to RGB
         image = np.uint8((image-image.min())*255/(image.max()-image.min()))
-        image = np.stack([image,image,image],axis =-1)
+        if len(image.shape) == 2:
+        	image = np.stack([image,image,image],axis =-1)
         
         # extract certain classes from mask (e.g. cars)
         masks = [(mask == v) for v in self.class_values]
@@ -280,8 +281,8 @@ def get_preprocessing(preprocessing_fn):
 BACKBONE = args.backbone
 BATCH_SIZE = args.batch_size
 
-if args.dataset == 'wbc_1024x1024':
-	CLASSES = ['class1', 'class2', 'class3', 'class4', 'class5']
+# if args.dataset == 'wbc_1024x1024':
+CLASSES = ['class1', 'class2', 'class3', 'class4', 'class5']
 
 LR = args.lr
 EPOCHS = args.epoch
@@ -333,6 +334,8 @@ elif args.loss =='focal+jaccard+dice':
 	total_loss = dice_loss + jaccard_loss+ (args.focal_weight * focal_loss)
 elif args.loss == 'focal':
 	total_loss = sm.losses.BinaryFocalLoss() if n_classes == 1 else sm.losses.CategoricalFocalLoss()
+elif args.loss == 'ce':
+	total_loss = tf.keras.losses.CategoricalCrossentropy()
 
 metrics = [sm.metrics.IOUScore(threshold=0.5), sm.metrics.FScore(threshold=0.5)]
 
@@ -371,7 +374,7 @@ print(train_dataloader[0][0].shape)
 assert train_dataloader[0][0].shape == (BATCH_SIZE, args.dim, args.dim, 3)
 assert train_dataloader[0][1].shape == (BATCH_SIZE, args.dim, args.dim, n_classes)
 
-if args.dataset == 'wbc_1024x1024':
+if 'wbc' in args.dataset:
 	model_folder = '/data/wbc_models/{}'.format(model_name) if args.docker else '../../models/wbc_models/{}'.format(model_name)
 
 generate_folder(model_folder)
