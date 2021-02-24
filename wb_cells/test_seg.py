@@ -40,8 +40,8 @@ with open(args.model_file, 'r+') as f:
 
 
 # model_names = ['single-net-Unet-bone-efficientnetb5-pre-True-epoch-2400-batch-4-lr-0.0001-dim-800-train-1100-rot-0-set-cell_cycle_1984_v2-ext-True-loss-focal+dice-up-upsampling-filters-256-red_factor-1.0-pyr_agg-sum-bk-1.0-fl_weight-4.0-fv-1']
-# index = args.index
-index = 2
+index = args.index
+# index = 2
 model_name = model_names[index]
 epoch = epoch_list[index]
 
