@@ -147,8 +147,8 @@ class WBCConfig(Config):
     RPN_ANCHOR_SCALES = (16, 32, 64, 128, 256)
 
     # ROIs kept after non-maximum supression (training and inference)
-    POST_NMS_ROIS_TRAINING = 1000
-    POST_NMS_ROIS_INFERENCE = 2000
+    POST_NMS_ROIS_TRAINING = 2000
+    POST_NMS_ROIS_INFERENCE = 4000
 
     # Non-max suppression threshold to filter RPN proposals.
     # You can increase this during training to generate more propsals.
@@ -171,7 +171,7 @@ class WBCConfig(Config):
     # ratio of 1:3. You can increase the number of proposals by adjusting
     # the RPN NMS threshold.
     # TRAIN_ROIS_PER_IMAGE = 128
-    TRAIN_ROIS_PER_IMAGE = 128
+    TRAIN_ROIS_PER_IMAGE = 256
 
     # Maximum number of ground truth instances to use in one image
     MAX_GT_INSTANCES = 10
@@ -255,14 +255,17 @@ class WBCDataset(utils.Dataset):
 
         # Read mask files from .png image
         mask = []
+        labels = []
         for f in next(os.walk(mask_dir))[2]:
             if f.endswith(".png"):
-                m = skimage.io.imread(os.path.join(mask_dir, f)).astype(np.bool)
-                mask.append(m)
+                m = skimage.io.imread(os.path.join(mask_dir, f)).astype(np.int32)
+                labels.append(np.unique(m)[-1])
+                mask.append(m > 0)
         mask = np.stack(mask, axis=-1)
         # Return mask, and array of class IDs of each instance. Since we have
         # one class ID, we return an array of ones
-        return mask, np.ones([mask.shape[-1]], dtype=np.int32)
+        return mask, np.array(labels)
+#         return mask, np.ones([mask.shape[-1]], dtype=np.int32)
 
     def image_reference(self, image_id):
         """Return the path of the image."""
@@ -315,7 +318,7 @@ def train(model, dataset_dir, subset):
     print("Train all layers")
     model.train(dataset_train, dataset_val,
                 learning_rate=config.LEARNING_RATE,
-                epochs=200,
+                epochs=400,
                 augmentation=augmentation,
                 layers='all')
 
@@ -481,7 +484,7 @@ if __name__ == '__main__':
     if args.command == "train":
         config = WBCConfig()
         if args.backbone: config.BACKBONE = args.backbone
-        if args.gpu: config.GPU_COUNT = len(args.gpu.split(','))
+        # if args.gpu: config.GPU_COUNT = len(args.gpu.split(','))
         if args.imgs: config.IMAGES_PER_GPU = int(args.imgs)
     else:
         config = WBCInferenceConfig()
