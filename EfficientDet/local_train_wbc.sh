@@ -18,3 +18,6 @@ python3 train.py --snapshot imagenet --phi 6 --gpu 1 --snapshot-path ../../resul
 python3 train.py --snapshot imagenet --phi 1 --gpu 0 --snapshot-path ../../results/det1 --random-transform --compute-val-loss --freeze-backbone --batch-size 32 --steps 1000 csv ../../datasets/wbc2_1024x1024/train.csv ../../datasets/wbc2_1024x1024/class.csv --val-annotations-path ../../datasets/wbc2_1024x1024/valid.csv
 
 python3 train.py --snapshot imagenet --phi 4 --gpu 2 --snapshot-path ../../results/wbc2/det4 --random-transform --compute-val-loss --freeze-backbone --batch-size 4 --steps 1000 csv ../../datasets/wbc2_1024x1024/train.csv ../../datasets/wbc2_1024x1024/class.csv --val-annotations-path ../../datasets/wbc2_1024x1024/valid.csv
+
+# Feb 28, 2021
+python3 train.py --snapshot imagenet --phi 1 --gpu 0 --snapshot-path ../../results/det1 --random-transform --compute-val-loss --freeze-backbone --batch-size 32 --steps 1000 csv ../../datasets/wbc2_1024x1024/train.csv ../../datasets/wbc2_1024x1024/class.csv --val-annotations-path ../../datasets/wbc2_1024x1024/valid.csv

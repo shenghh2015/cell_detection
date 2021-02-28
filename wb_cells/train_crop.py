@@ -46,6 +46,7 @@ parser.add_argument("--data_version", type=int, default = 0)
 parser.add_argument("--upsample", type=str, default = 'upsampling')
 parser.add_argument("--filters", type=int, default = 256)
 parser.add_argument("--rot", type=float, default = 0)
+parser.add_argument("--cls", type=int, default = 5)
 parser.add_argument("--lr", type=float, default = 1e-3)
 parser.add_argument("--bk", type=float, default = 0.5)
 parser.add_argument("--focal_weight", type=float, default = 1)
@@ -57,10 +58,10 @@ parser.add_argument("--reduce_factor", type=float, default = 1.0)
 args = parser.parse_args()
 print(args)
 
-model_name = 'net-{}-bone-{}-pre-{}-epoch-{}-batch-{}-lr-{}-dim-{}-train-{}-rot-{}-set-{}-dv-{}-loss-{}-up-{}-filters-{}-rf-{}-bk-{}-flw-{}-fv-{}-new-{}-crop-{}'.format(args.net_type,\
+model_name = 'net-{}-bone-{}-pre-{}-epoch-{}-batch-{}-lr-{}-dim-{}-train-{}-rot-{}-set-{}-dv-{}-loss-{}-up-{}-filters-{}-rf-{}-bk-{}-flw-{}-fv-{}-new-{}-crop-{}-cls-{}'.format(args.net_type,\
 		 	args.backbone, args.pre_train, args.epoch, args.batch_size, args.lr, args.dim,\
 		 	args.train, args.rot, args.dataset, args.data_version, args.loss, args.upsample,\
-		 	args.filters, args.reduce_factor, args.bk, args.focal_weight, args.feat_version, args.newest, args.crop)
+		 	args.filters, args.reduce_factor, args.bk, args.focal_weight, args.feat_version, args.newest, args.crop, args.cls)
 print(model_name)
 
 os.environ['CUDA_VISIBLE_DEVICES'] = args.gpu
@@ -299,7 +300,7 @@ BACKBONE = args.backbone
 BATCH_SIZE = args.batch_size
 
 # if args.dataset == 'wbc_1024x1024':
-CLASSES = ['class1', 'class2', 'class3', 'class4', 'class5']
+CLASSES = ['class1', 'class2', 'class3', 'class4', 'class5'] if args.cls == 5 else ['bk']
 
 LR = args.lr
 EPOCHS = args.epoch
@@ -353,6 +354,8 @@ elif args.loss == 'focal':
 	total_loss = sm.losses.BinaryFocalLoss() if n_classes == 1 else sm.losses.CategoricalFocalLoss()
 elif args.loss == 'ce':
 	total_loss = tf.keras.losses.CategoricalCrossentropy()
+elif args.loss == 'bce':
+	total_loss = tf.keras.losses.BinaryCrossentropy()
 
 metrics = [sm.metrics.IOUScore(threshold=0.5), sm.metrics.FScore(threshold=0.5)]
 
@@ -440,8 +443,10 @@ class HistoryPrintCallback(tf.keras.callbacks.Callback):
 						for i in range(0, len(valid_dataset),int(len(valid_dataset)/36)):
 								gt_vols.append(valid_dataloader[i][1])
 								pr_vols.append(self.model.predict(valid_dataloader[i]))
-						gt_vols = np.concatenate(gt_vols, axis = 0); gt_map = map2rgb(np.argmax(gt_vols,axis =-1))
-						pr_vols = np.concatenate(pr_vols, axis = 0); pr_map = map2rgb(np.argmax(pr_vols,axis =-1))
+						gt_vols = np.concatenate(gt_vols, axis = 0); gt_map = np.uint8((gt_vols > 0.5) * 255)
+						gt_map = np.concatenate([gt_map, gt_map, gt_map], axis = -1)
+						pr_vols = np.concatenate(pr_vols, axis = 0); pr_map = np.uint8((pr_vols > 0.5) * 255)
+						pr_map = np.concatenate([pr_map, pr_map, pr_map], axis = -1)
 						if epoch == 0:
 								save_images(model_folder+'/ground_truth.png'.format(epoch), gt_map)
 						save_images(model_folder+'/pr-{}.png'.format(epoch), pr_map)
