@@ -97,7 +97,7 @@ def create_callbacks(training_model, prediction_model, validation_generator, arg
             evaluation = Evaluate(validation_generator, prediction_model, tensorboard=tensorboard_callback)
         else:
             from eval.pascal import Evaluate
-            evaluation = Evaluate(validation_generator, prediction_model, tensorboard=tensorboard_callback)
+            evaluation = Evaluate(validation_generator, prediction_model, tensorboard=tensorboard_callback, model_dir = args.snapshot_path)
         callbacks.append(evaluation)
 
     # save the model

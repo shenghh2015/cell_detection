@@ -32,6 +32,7 @@ class Evaluate(keras.callbacks.Callback):
         iou_threshold=0.5,
         score_threshold=0.01,
         max_detections=100,
+        model_dir = None,
         save_path=None,
         tensorboard=None,
         weighted_average=False,
@@ -56,6 +57,7 @@ class Evaluate(keras.callbacks.Callback):
         self.max_detections = max_detections
         self.save_path = save_path
         self.tensorboard = tensorboard
+        self.model_dir = model_dir
         self.weighted_average = weighted_average
         self.verbose = verbose
         self.active_model = model
@@ -78,10 +80,13 @@ class Evaluate(keras.callbacks.Callback):
         # compute per class average precision
         total_instances = []
         precisions = []
+        write_lines = []
         for label, (average_precision, num_annotations) in average_precisions.items():
             if self.verbose == 1:
                 print('{:.0f} instances of class'.format(num_annotations),
                       self.generator.label_to_name(label), 'with average precision: {:.4f}'.format(average_precision))
+                write_lines.append('{:.0f} instances of class '.format(num_annotations) + 
+                      self.generator.label_to_name(label) + ' with average precision: {:.4f}\n'.format(average_precision))
             total_instances.append(num_annotations)
             precisions.append(average_precision)
         if self.weighted_average:
@@ -103,3 +108,12 @@ class Evaluate(keras.callbacks.Callback):
 
         if self.verbose == 1:
             print('mAP: {:.4f}'.format(self.mean_ap))
+        
+        if self.model_dir:
+            with open(self.model_dir + '/train_log.txt', 'a') as f:
+                f.write('----- Epoch: {}\n'.format(epoch))
+                for line in write_lines:
+                    f.write(line)
+                f.write('mAP: {:.4f}\n'.format(self.mean_ap))
+                
+        
