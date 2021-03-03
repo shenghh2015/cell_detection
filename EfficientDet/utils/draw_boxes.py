@@ -7,9 +7,9 @@ def draw_boxes(image, boxes, scores, labels, colors, classes):
         class_name = classes[class_id]
     
         xmin, ymin, xmax, ymax = list(map(int, b))
-        score = '{:.4f}'.format(s)
+        score = '{:.3f}'.format(s)
         color = colors[class_id]
-        label = '-'.join([class_name, score])
+        label = ':'.join([class_name, score])
     
         ret, baseline = cv2.getTextSize(label, cv2.FONT_HERSHEY_SIMPLEX, 0.5, 1)
         cv2.rectangle(image, (xmin, ymin), (xmax, ymax), color, 1)
