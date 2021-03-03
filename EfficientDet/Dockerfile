@@ -6,7 +6,7 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --allow-
 
 RUN ln -s /usr/bin/python2.7 /usr/bin/python2
 
-RUN pip install scipy sklearn natsort ipython
+RUN pip install scipy sklearn natsort ipython scikit-image
 
 RUN pip install tqdm==4.28.1 progressbar2 Pillow opencv-python==3.4.2.17 Keras==2.2.5
 
