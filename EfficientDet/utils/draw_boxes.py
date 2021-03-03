@@ -1,6 +1,5 @@
 import cv2
 
-
 def draw_boxes(image, boxes, scores, labels, colors, classes):
     for b, l, s in zip(boxes, labels, scores):
         class_id = int(l)
