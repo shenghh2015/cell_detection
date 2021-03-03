@@ -262,6 +262,111 @@ def evaluate(
 
     return average_precisions
 
+def evaluate_wbc(
+        generator,
+        model,
+        iou_threshold=0.5,
+        score_threshold=0.01,
+        max_detections=100,
+        visualize=False,
+        model_dir = None,
+        epoch=0
+):
+    """
+    Evaluate a given dataset using a given model.
+
+    Args:
+        generator: The generator that represents the dataset to evaluate.
+        model: The model to evaluate.
+        iou_threshold: The threshold used to consider when a detection is positive or negative.
+        score_threshold: The score confidence threshold to use for detections.
+        max_detections: The maximum number of detections to use per image.
+        visualize: Show the visualized detections or not.
+
+    Returns:
+        A dict mapping class names to mAP scores.
+
+    """
+    # gather all detections and annotations
+    all_detections = _get_detections(generator, model, score_threshold=score_threshold, max_detections=max_detections,
+                                     visualize=visualize)
+    all_annotations = _get_annotations(generator)
+    average_precisions = {}
+    num_tp = 0
+    num_fp = 0
+
+    # process detections and annotations
+    for label in range(generator.num_classes()):
+        if not generator.has_label(label):
+            continue
+
+        false_positives = np.zeros((0,))
+        true_positives = np.zeros((0,))
+        scores = np.zeros((0,))
+        num_annotations = 0.0
+
+        for i in range(generator.size()):
+            detections = all_detections[i][label]
+            annotations = all_annotations[i][label]
+            num_annotations += annotations.shape[0]
+            detected_annotations = []
+
+            for d in detections:
+                scores = np.append(scores, d[4])
+
+                if annotations.shape[0] == 0:
+                    false_positives = np.append(false_positives, 1)
+                    true_positives = np.append(true_positives, 0)
+                    continue
+                overlaps = compute_overlap(np.expand_dims(d, axis=0), annotations)
+                assigned_annotation = np.argmax(overlaps, axis=1)
+                max_overlap = overlaps[0, assigned_annotation]
+
+                if max_overlap >= iou_threshold and assigned_annotation not in detected_annotations:
+                    false_positives = np.append(false_positives, 0)
+                    true_positives = np.append(true_positives, 1)
+                    detected_annotations.append(assigned_annotation)
+                else:
+                    false_positives = np.append(false_positives, 1)
+                    true_positives = np.append(true_positives, 0)
+
+        # no annotations -> AP for this class is 0 (is this correct?)
+        if num_annotations == 0:
+            average_precisions[label] = 0, 0
+            continue
+
+        # sort by score
+        indices = np.argsort(-scores)
+        false_positives = false_positives[indices]
+        true_positives = true_positives[indices]
+
+        # compute false positives and true positives
+        false_positives = np.cumsum(false_positives)
+        true_positives = np.cumsum(true_positives)
+
+        if false_positives.shape[0] == 0:
+            num_fp += 0
+        else:
+            num_fp += false_positives[-1]
+        if true_positives.shape[0] == 0:
+            num_tp += 0
+        else:
+            num_tp += true_positives[-1]
+
+        # compute recall and precision
+        recall = true_positives / num_annotations
+        precision = true_positives / np.maximum(true_positives + false_positives, np.finfo(np.float64).eps)
+
+        # compute average precision
+        average_precision = _compute_ap(recall, precision)
+        average_precisions[label] = average_precision, num_annotations
+        
+        if model_dir:
+            # print(recall.shape, precision.shape)
+            np.savetxt(model_dir + '/{}.txt'.format(label), np.stack([recall, precision], axis = -1))
+    print('num_fp={}, num_tp={}'.format(num_fp, num_tp))
+    
+    return average_precisions
 
 if __name__ == '__main__':
     from generators.pascal import PascalVocGenerator

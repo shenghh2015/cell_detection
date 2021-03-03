@@ -12,7 +12,7 @@
 # JOB: python3 train_wbc.py --docker --snapshot imagenet --phi 3 --gpu 3 --batch-size 4 --epoch 200 --steps 1000 --dataset wbc_1024x1024
 
 # Mar 3, 2021
-JOB: python3 train_wbc.py --docker --snapshot imagenet --phi 0 --gpu 0 --batch-size 16 --epoch 200 --steps 100 --dataset wbc_1024x1024
-JOB: python3 train_wbc.py --docker --snapshot imagenet --phi 0 --gpu 1 --batch-size 16 --epoch 200 --steps 100 --dataset wbc2_1024x1024
-JOB: python3 train_wbc.py --docker --snapshot imagenet --phi 0 --gpu 2 --batch-size 16 --epoch 200 --steps 100 --dataset wbc3_1024x1024
-JOB: python3 train_wbc.py --docker --snapshot imagenet --phi 1 --gpu 3 --batch-size 10 --epoch 200 --steps 100 --dataset wbc_1024x1024
+JOB: python3 train_wbc.py --docker --snapshot imagenet --phi 0 --gpu 0 --batch-size 16 --epoch 400 --steps 100 --dataset wbc_1024x1024
+JOB: python3 train_wbc.py --docker --snapshot imagenet --phi 0 --gpu 1 --batch-size 16 --epoch 400 --steps 100 --dataset wbc2_1024x1024
+JOB: python3 train_wbc.py --docker --snapshot imagenet --phi 0 --gpu 2 --batch-size 16 --epoch 400 --steps 100 --dataset wbc3_1024x1024
+JOB: python3 train_wbc.py --docker --snapshot imagenet --phi 1 --gpu 3 --batch-size 10 --epoch 400 --steps 100 --dataset wbc_1024x1024

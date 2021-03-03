@@ -1,0 +1,2 @@
+python3 train_wbc.py --docker --snapshot imagenet --dataset wbc3_1024x1024 --phi 0 --gpu 2 --batch-size 8 --steps 100 --epoch 200
+python3 train_wbc.py --docker --snapshot imagenet --dataset wbc3_1024x1024 --phi 0 --gpu 2 --batch-size 8 --steps 100 --epoch 200 --weighted-bifpn

@@ -5,8 +5,10 @@ import os
 import time
 import glob
 
+from natsort import natsorted
+
 from generators.csv_ import CSVGenerator
-from eval.common import evaluate
+from eval.common import evaluate, evaluate_wbc
 
 from model import efficientdet
 from utils import preprocess_image, postprocess_boxes
@@ -36,90 +38,7 @@ def load_test_boxes(dataset):
                 gt_boxes[img_path][1].append(label)
     return gt_boxes
 
-# dataset = 'wbc_1024x1024'
-# gt_boxes = load_test_boxes(dataset)
-
-def main():
-		os.environ['CUDA_VISIBLE_DEVICES'] = '2'
-		# model_file = 'phi-1-set-wbc_1024x1024-wfpn-False-ep-50-stp-1000-bz-4/csv_02_0.4223_0.6017.h5'
-		# model_file = 'phi-1-set-wbc2_1024x1024-wfpn-False-ep-50-stp-1000-bz-4/csv_02_0.3394_0.3840.h5'
-		# model_file = 'phi-1-set-wbc2_1024x1024-wfpn-False-ep-50-stp-1000-bz-4/csv_02_0.3394_0.3840.h5'
-		# model_file = 'phi-3-set-wbc_1024x1024-wfpn-False-ep-200-stp-1000-bz-4/csv_06_0.2215_0.9039.h5'
-		# model_file = 'phi-3-set-wbc_1024x1024-wfpn-False-ep-200-stp-1000-bz-4/csv_07_0.2001_0.5420.h5'
-		model_file = 'phi-4-set-wbc3_1024x1024-wfpn-False-ep-200-stp-1000-bz-2/csv_07_0.3233_0.4918.h5'
-		model_name = os.path.dirname(model_file)
-		splits = model_name.split('-')
-		dataset = 'wbc_1024x1024'
-		phi = 0
-		wfpn = False
-		for v, sp in enumerate(splits):
-				if sp == 'set':
-						dataset = splits[v + 1]
-				elif sp == 'phi':
-						phi = int(splits[v+1])
-				elif sp == 'wfpn':
-						wfpn = splits[v+1].lower() == 'true'
-		# model_path = 'efficientdet-d1.h5'
-		# model_path = '/data/results/wbc/det0/csv_08_0.0669_0.8021.h5'
-		model_path = '/data/models/{}/{}'.format(dataset, model_file)
-		image_sizes = (512, 640, 768, 896, 1024, 1280, 1408)
-		image_size = image_sizes[phi]
-		classes = {0:'neutrophils', 1:'eosinophils', 2:'lymphocytes', 3:'monocytes'}
-		num_classes = len(classes)
-		score_threshold = 0.3
-		colors = [np.random.randint(0, 256, 3).tolist() for _ in range(num_classes)]
-		_, model = efficientdet(phi=phi,
-														weighted_bifpn=wfpn,
-														num_classes=num_classes,
-														score_threshold=score_threshold)
-		model.load_weights(model_path, by_name=True)
-
-		# evaluate the precisions
-		evaluate_ap(model, phi, dataset)
-
-		gt_boxes = load_test_boxes(dataset)
-		#for image_path in glob.glob('datasets/VOC2007/JPEGImages/*.png'):
-		for image_path in gt_boxes:
-				#print(image_path)
-				image = cv2.imread(image_path)
-				src_image = image.copy()
-				gt_image = image.copy()
-				# BGR -> RGB
-				image = image[:, :, ::-1]
-				h, w = image.shape[:2]
-
-				image, scale = preprocess_image(image, image_size=image_size)
-				# run network
-				start = time.time()
-				boxes, scores, labels = model.predict_on_batch([np.expand_dims(image, axis=0)])
-				boxes, scores, labels = np.squeeze(boxes), np.squeeze(scores), np.squeeze(labels)
-				#print(time.time() - start)
-				boxes = postprocess_boxes(boxes=boxes, scale=scale, height=h, width=w)
-
-				# select indices which have a score above the threshold
-				indices = np.where(scores[:] > score_threshold)[0]
-
-				# select those detections
-				boxes = boxes[indices]
-				labels = labels[indices]
-
-				# prediction
-				draw_pr_boxes(src_image, boxes, scores, labels, colors, classes)
-				# ground truth
-				gt_box, labels = gt_boxes[image_path]
-				gt_box = np.array(gt_box); labels = np.array(labels)
-				draw_gt_boxes(gt_image, gt_box, labels, colors, classes)
-
-				#cv2.namedWindow('image', cv2.WINDOW_NORMAL)
-				model_dir = os.path.dirname(model_path)
-				result_dir = model_dir + '/results'
-				if not os.path.exists(result_dir):
-						os.system('mkdir -p {}'.format(result_dir))
-				cv2.imwrite(result_dir + '/pr_{}'.format(os.path.basename(image_path)), src_image)
-				cv2.imwrite(result_dir + '/gt_{}'.format(os.path.basename(image_path)), gt_image)
-				cv2.waitKey(0)
-
-def evaluate_ap(model, phi, dataset):
+def evaluate_ap(model, phi, dataset, model_path = './', save = False):
 		# dataset = 'wbc_1024x1024'
 		val_annotations_path = dataset_dir + '/' + dataset + '/docker/test_4c.csv'
 		classes_path = dataset_dir + '/' + dataset + '/docker/classes.csv'
@@ -129,12 +48,14 @@ def evaluate_ap(model, phi, dataset):
 		shuffle_groups=False,
 		phi= phi)
 		score_threshold = 0.3
-		average_precisions = evaluate(
+		model_dir = os.path.dirname(model_path) if save else None
+		average_precisions = evaluate_wbc(
 				validation_generator,
 				model,
 				iou_threshold= 0.5,
 				score_threshold= score_threshold,
 				max_detections=10,
+				model_dir = model_dir,
 				visualize = False
 		)
 		total_instances = []
@@ -148,7 +69,134 @@ def evaluate_ap(model, phi, dataset):
 							generator.label_to_name(label) + ' with average precision: {:.4f}\n'.format(average_precision))
 				total_instances.append(num_annotations)
 				precisions.append(average_precision)
-		print(np.mean(precisions)) 
+		print(np.mean(precisions))
+		# save the summary if save is True
+		if save:
+			model_folder = os.path.join(model_root_dir, dataset, os.path.basename(os.path.dirname(model_path)))
+			with open(model_folder + '/best_model_summary', 'w+') as f:
+					f.write('Model path: {}\n'.format(model_path))
+					for line in write_lines:
+					    f.write(line)
+					f.write('mAP: {:.4f}\n'.format(np.mean(precisions))) 
+		return np.mean(precisions)
+
+# dataset = 'wbc_1024x1024'
+# gt_boxes = load_test_boxes(dataset)
+
+model_root_dir = '/data/models/'
+    
+def fetch_top_weights(model_name, top = 10):
+    #model_name = 'phi-0-set-wbc_1024x1024-wfpn-False-ep-200-stp-100-bz-8'
+    # fetch top epochs
+    splits = model_name.split('-')
+    dataset = 'wbc_1024x1024'
+    for v, sp in enumerate(splits):
+        if sp == 'set':
+            dataset = splits[v + 1]
+    model_folder = os.path.join(model_root_dir, dataset, model_name)
+    log_file = model_folder + '/train_log.txt'
+    mAPs = []
+    with open(log_file, 'r+') as f:
+        lines = f.readlines()
+    for line in lines:
+        if 'mAP: ' in line:
+            mAPs.append(float(line.strip().split(': ')[-1]))
+    mAP_index_map = {}
+    for ind, mAP in enumerate(mAPs):
+        mAP_index_map[mAP] = ind
+    mAPs.sort()
+    mAPs.reverse()
+    print(mAPs[:top])
+    top_epochs = list(set([mAP_index_map[mAP] + 1 for mAP in mAPs[:top]]))
+    # fetch top weights
+    weight_files = []
+    for epoch in top_epochs:
+        weight_files += glob.glob(model_folder + '/csv_{}_*'.format(epoch))
+    return weight_files
+
+def main():
+		os.environ['CUDA_VISIBLE_DEVICES'] = '0'
+		
+		model_name_list = ['phi-0-set-wbc_1024x1024-wfpn-False-ep-200-stp-100-bz-16',
+											 'phi-0-set-wbc2_1024x1024-wfpn-True-ep-200-stp-100-bz-8',
+											 'phi-0-set-wbc3_1024x1024-wfpn-False-ep-200-stp-100-bz-16'
+											]
+		for model_name in model_name_list:
+				# model_name = 'phi-0-set-wbc_1024x1024-wfpn-False-ep-200-stp-100-bz-16'
+				# model_name = 'phi-0-set-wbc2_1024x1024-wfpn-True-ep-200-stp-100-bz-8'
+				# model_name = 'phi-0-set-wbc3_1024x1024-wfpn-False-ep-200-stp-100-bz-16'
+				# parse the model name to get parameters
+				splits = model_name.split('-')
+				dataset = 'wbc_1024x1024'
+				phi = 0
+				wfpn = False
+				for v, sp in enumerate(splits):
+						if sp == 'set':
+								dataset = splits[v + 1]
+						elif sp == 'phi':
+								phi = int(splits[v+1])
+						elif sp == 'wfpn':
+								wfpn = splits[v+1].lower() == 'true'
+				mAP_list = []
+				weight_files = fetch_top_weights(model_name, top = 10)
+				image_sizes = (512, 640, 768, 896, 1024, 1280, 1408)
+				image_size = image_sizes[phi]
+				classes = {0:'neutrophils', 1:'eosinophils', 2:'lymphocytes', 3:'monocytes'}
+				num_classes = len(classes)
+				score_threshold = 0.3
+				colors = [np.random.randint(0, 256, 3).tolist() for _ in range(num_classes)]
+				_, model = efficientdet(phi=phi,
+																weighted_bifpn=wfpn,
+																num_classes=num_classes,
+																score_threshold=score_threshold)
+				for model_path in weight_files:
+						model.load_weights(model_path, by_name=True)
+						mAP = evaluate_ap(model, phi, dataset)
+						mAP_list.append(mAP)
+				best_index = np.argmax(mAP_list); print('Best mAP: {:.3f}'.format(mAP_list[best_index]))
+				model_path = weight_files[best_index]
+				model.load_weights(model_path, by_name=True)
+				evaluate_ap(model, phi, dataset, model_path, True)
+				gt_boxes = load_test_boxes(dataset)
+				#for image_path in glob.glob('datasets/VOC2007/JPEGImages/*.png'):
+				for image_path in gt_boxes:
+						#print(image_path)
+						image = cv2.imread(image_path)
+						src_image = image.copy()
+						gt_image = image.copy()
+						# BGR -> RGB
+						image = image[:, :, ::-1]
+						h, w = image.shape[:2]
+						image, scale = preprocess_image(image, image_size=image_size)
+						# run network
+						start = time.time()
+						boxes, scores, labels = model.predict_on_batch([np.expand_dims(image, axis=0)])
+						boxes, scores, labels = np.squeeze(boxes), np.squeeze(scores), np.squeeze(labels)
+						#print(time.time() - start)
+						boxes = postprocess_boxes(boxes=boxes, scale=scale, height=h, width=w)
+
+						# select indices which have a score above the threshold
+						indices = np.where(scores[:] > score_threshold)[0]
+
+						# select those detections
+						boxes = boxes[indices]
+						labels = labels[indices]
+
+						# prediction
+						draw_pr_boxes(src_image, boxes, scores, labels, colors, classes)
+						# ground truth
+						gt_box, labels = gt_boxes[image_path]
+						gt_box = np.array(gt_box); labels = np.array(labels)
+						draw_gt_boxes(gt_image, gt_box, labels, colors, classes)
+
+						#cv2.namedWindow('image', cv2.WINDOW_NORMAL)
+						model_dir = os.path.dirname(model_path)
+						result_dir = model_dir + '/results'
+						if not os.path.exists(result_dir):
+								os.system('mkdir -p {}'.format(result_dir))
+						cv2.imwrite(result_dir + '/pr_{}'.format(os.path.basename(image_path)), src_image)
+						cv2.imwrite(result_dir + '/gt_{}'.format(os.path.basename(image_path)), gt_image)
+						cv2.waitKey(0)
 
 if __name__ == '__main__':
     main()
