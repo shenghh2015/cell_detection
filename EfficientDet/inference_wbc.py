@@ -115,7 +115,7 @@ def fetch_top_weights(model_name, top = 10):
     return weight_files
 
 def main():
-		os.environ['CUDA_VISIBLE_DEVICES'] = '0'
+		os.environ['CUDA_VISIBLE_DEVICES'] = '2'
 		
 		model_name_list = ['phi-0-set-wbc_1024x1024-wfpn-False-ep-200-stp-100-bz-16',
 											 'phi-0-set-wbc2_1024x1024-wfpn-True-ep-200-stp-100-bz-8',
@@ -188,6 +188,10 @@ def main():
 						gt_box, labels = gt_boxes[image_path]
 						gt_box = np.array(gt_box); labels = np.array(labels)
 						draw_gt_boxes(gt_image, gt_box, labels, colors, classes)
+						
+						test_true = True
+						if test_true:
+						    cv2.imwrite('./test.png', src_image)
 
 						#cv2.namedWindow('image', cv2.WINDOW_NORMAL)
 						model_dir = os.path.dirname(model_path)
