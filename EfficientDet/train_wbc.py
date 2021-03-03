@@ -307,7 +307,7 @@ def main(args=None):
     snapshot = 'imagenet'
     splits = args.snapshot.split('/')
     if len(splits) > 1:
-        snapshot == splits[-1]
+        snapshot = splits[-2]
     dataset_dir = '/data/datasets/{}'.format(args.dataset) if args.docker else './datasets/{}'.format(args.dataset)
     
     train_annot_path = dataset_dir + '/docker/train_4c.csv' if args.docker else dataset_dir + '/train_4c.csv'
