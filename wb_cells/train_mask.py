@@ -1,6 +1,6 @@
 import os
 import sys
-sys.path.append('../')
+# sys.path.append('../')
 import cv2
 from skimage import io
 import tensorflow as tf
