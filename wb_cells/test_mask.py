@@ -8,7 +8,7 @@ import random
 import matplotlib.pyplot as plt
 import argparse
 import sys
-sys.path.append('../')
+#sys.path.append('../')
 import segmentation_models as sm
 from segmentation_models_v1 import Unet, Linknet, PSPNet, FPN, AtUnet
 
@@ -23,8 +23,8 @@ def str2bool(value):
     return value.lower() == 'true'
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--gpu", type=str, default = '2')
-parser.add_argument("--model_file", type=str, default = './test_seg/models2.txt')
+parser.add_argument("--gpu", type=str, default = '0')
+parser.add_argument("--model_file", type=str, default = './test_mask/models.txt')
 parser.add_argument("--index", type=int, default = 0)
 parser.add_argument("--save", type=str2bool, default = False)
 args = parser.parse_args()
@@ -38,7 +38,6 @@ with open(args.model_file, 'r+') as f:
 				model_names.append(line.strip().split(',')[0])
 				epoch_list.append(int(line.strip().split(',')[1]))
 
-
 # model_names = ['single-net-Unet-bone-efficientnetb5-pre-True-epoch-2400-batch-4-lr-0.0001-dim-800-train-1100-rot-0-set-cell_cycle_1984_v2-ext-True-loss-focal+dice-up-upsampling-filters-256-red_factor-1.0-pyr_agg-sum-bk-1.0-fl_weight-4.0-fv-1']
 index = args.index
 # index = 2
@@ -49,7 +48,6 @@ print(model_name)
 print('Epoch:{}'.format(epoch))
 model_root_folder = '/data/wbc_models/'
 nb_train_test = 200
-model_folder = model_root_folder+model_name
 
 ## parse model name
 splits = model_name.split('-')
@@ -79,6 +77,8 @@ for v in range(len(splits)):
 	elif splits[v] == 'fv':
 		if not splits[v+1] == 'None':
 			feature_version = int(splits[v+1]); print('feature version:{}'.format(feature_version))	
+
+model_folder = model_root_folder + model_name
 
 def read_txt(txt_dir):
     lines = []
@@ -146,14 +146,14 @@ class Dataset:
 			image = np.stack([image,image,image],axis =-1)
 #         print(np.unique(mask))
 		# extract certain classes from mask (e.g. cars)
-		masks = [(mask == v) for v in self.class_values]
+		masks = [(mask > 0) * 1.0]
 #         print(self.class_values)
 		mask = np.stack(masks, axis=-1).astype('float')
 	
 		# add background if mask is not binary
-		if mask.shape[-1] != 1:
-			background = 1 - mask.sum(axis=-1, keepdims=True)
-			mask = np.concatenate((mask, background), axis=-1)
+		#if mask.shape[-1] != 1:
+		#	background = 1 - mask.sum(axis=-1, keepdims=True)
+		#	mask = np.concatenate((mask, background), axis=-1)
 	
 		# apply augmentations
 		if self.augmentation:
@@ -341,8 +341,8 @@ for subset in subsets:
 		pred_dir = os.path.join(model_folder, 'pred_{}'.format(subset))
 		generate_folder(pred_dir)
 		for pi, fn in enumerate(test_ids):
-		io.imsave(pred_dir+'/{}pr.png'.format(fn), pr_save_map[pi,:,:])
-		io.imsave(pred_dir+'/{}gt.png'.format(fn), gt_save_map[pi,:,:])
+			io.imsave(pred_dir+'/{}_pr.png'.format(fn), pr_save_map[pi,:,:])
+			io.imsave(pred_dir+'/{}_gt.png'.format(fn), gt_save_map[pi,:,:])
 		io.imsave(model_folder+'/pr_{}.png'.format(fn.split('.')[0]), pr_save_map[pi,:,:])
 	
 	y_true=gt_save_map.flatten(); y_pred = pr_save_map.flatten()
