@@ -10,3 +10,6 @@ python train_crop.py --docker True --gpu 0 --net_type Unet --backbone efficientn
 # Feb 27, 2021
 python train_crop.py --docker True --gpu 0 --net_type Unet --backbone efficientnetb0 --epoch 2400 --dim 352 --rot 20 --dataset wbc_1024x1024 --loss focal+dice --batch 10 --lr 1e-4 --focal_weight 4 --bk 1 --crop True --cls 2
 python train_crop.py --docker True --gpu 1 --net_type Unet --backbone efficientnetb0 --epoch 2400 --dim 352 --rot 20 --dataset wbc_1024x1024 --loss bce --batch 10 --lr 1e-4 --focal_weight 4 --bk 1 --crop True --cls 2
+
+# Mar 3, 2021
+python train_mask.py --docker True --gpu 0 --net_type Unet --backbone efficientnetb0 --epoch 2400 --dim 1024 --dataset wbc3_1024x1024 --loss focal+dice --batch 2 --lr 1e-4 --focal_weight 4 --bk 1
