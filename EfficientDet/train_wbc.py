@@ -254,6 +254,7 @@ def parse_args(args):
 		
     # csv_parser = subparsers.add_parser('csv')
     parser.add_argument('--dataset_type', type = str, default = 'csv')
+    parser.add_argument('--cls', type = int, default = 4)
     parser.add_argument('--annotations_path', help='Path to CSV file containing annotations for training.', default = '')
     parser.add_argument('--classes_path', help='Path to a CSV file containing class label mapping.', default = '')
     parser.add_argument('--val-annotations-path',
@@ -304,15 +305,20 @@ def main(args=None):
     args = parse_args(args)
     print(args)
     
+    snapshot = 'imagenet'
+    splits = args.snapshot.split('/')
+    if len(splits) > 1:
+        snapshot = splits[-2]
     dataset_dir = '/data/datasets/{}'.format(args.dataset) if args.docker else './datasets/{}'.format(args.dataset)
     
-    train_annot_path = dataset_dir + '/docker/train_4c.csv' if args.docker else dataset_dir + '/train_4c.csv'
-    valid_annot_path = dataset_dir + '/docker/valid_4c.csv' if args.docker else dataset_dir + '/valid_4c.csv'
-    class_path = dataset_dir + '/docker/classes.csv'
+    train_annot_path = dataset_dir + '/docker/train_{}c.csv'.format(args.cls) if args.docker else dataset_dir + '/train_4c.csv'
+    valid_annot_path = dataset_dir + '/docker/valid_{}c.csv'.format(args.cls) if args.docker else dataset_dir + '/valid_4c.csv'
+    class_path = dataset_dir + '/docker/class_{}c.csv'.format(args.cls)
     args.annotations_path = train_annot_path
     args.classes_path = class_path
     args.val_annotations_path = valid_annot_path
-    model_name = 'phi-{}-set-{}-wfpn-{}-ep-{}-stp-{}-bz-{}'.format(args.phi, args.dataset, args.weighted_bifpn, args.epochs, args.steps, args.batch_size)
+    model_name = 'phi-{}-set-{}-wfpn-{}-ep-{}-stp-{}-bz-{}-snap-{}-cls-{}'.format(args.phi, args.dataset,\
+    						 args.weighted_bifpn, args.epochs, args.steps, args.batch_size, snapshot, args.cls)
     model_dir = '/data/models/{}/{}'.format(args.dataset, model_name); print(model_dir)
     args.tensorboard_dir = model_dir + '/logs'
     args.snapshot_path = model_dir

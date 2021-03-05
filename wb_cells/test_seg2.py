@@ -341,7 +341,8 @@ for subset in subsets:
 		pred_dir = os.path.join(model_folder, 'pred_{}'.format(subset))
 		generate_folder(pred_dir)
 		for pi, fn in enumerate(test_ids):
-			imsave(pred_dir+'/{}.png'.format(fn), pr_save_map[pi,:,:])
+		io.imsave(pred_dir+'/{}pr.png'.format(fn), pr_save_map[pi,:,:])
+		io.imsave(pred_dir+'/{}gt.png'.format(fn), gt_save_map[pi,:,:])
 		io.imsave(model_folder+'/pr_{}.png'.format(fn.split('.')[0]), pr_save_map[pi,:,:])
 	
 	y_true=gt_save_map.flatten(); y_pred = pr_save_map.flatten()

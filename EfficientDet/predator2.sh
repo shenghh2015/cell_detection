@@ -1,2 +1,2 @@
-python3 train_wbc.py --docker --snapshot imagenet --dataset wbc_1024x1024 --phi 0 --gpu 0 --batch-size 8 --steps 100 --epoch 200
-python3 train_wbc.py --docker --snapshot imagenet --dataset wbc_1024x1024 --phi 0 --gpu 0 --batch-size 8 --steps 100 --epoch 200 --weighted-bifpn
+python3 train_wbc.py --docker --snapshot /data/coco/efficientdet-d0.h5 --dataset wbc_1024x1024 --phi 0 --gpu 0 --batch-size 8 --steps 100 --epoch 200
+python3 train_wbc.py --docker --snapshot /data/coco/efficientdet-d0.h5 --dataset wbc_1024x1024 --phi 0 --gpu 0 --batch-size 8 --steps 100 --epoch 200 --weighted-bifpn
