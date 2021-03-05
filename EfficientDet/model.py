@@ -463,6 +463,7 @@ def efficientdet(phi, num_classes=20, num_anchors=9, weighted_bifpn=False, freez
     else:
         detections = FilterDetections(
             name='filtered_detections',
+            class_specific_filter = False,  # add by shh
             score_threshold=score_threshold
         )([boxes, classification])
 

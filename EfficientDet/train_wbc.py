@@ -254,6 +254,7 @@ def parse_args(args):
 		
     # csv_parser = subparsers.add_parser('csv')
     parser.add_argument('--dataset_type', type = str, default = 'csv')
+    parser.add_argument('--cls', type = int, default = 4)
     parser.add_argument('--annotations_path', help='Path to CSV file containing annotations for training.', default = '')
     parser.add_argument('--classes_path', help='Path to a CSV file containing class label mapping.', default = '')
     parser.add_argument('--val-annotations-path',

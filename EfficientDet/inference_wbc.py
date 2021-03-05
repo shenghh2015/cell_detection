@@ -41,7 +41,7 @@ def load_test_boxes(dataset):
 def evaluate_ap(model, phi, dataset, model_path = './', save = False):
 		# dataset = 'wbc_1024x1024'
 		val_annotations_path = dataset_dir + '/' + dataset + '/docker/test_4c.csv'
-		classes_path = dataset_dir + '/' + dataset + '/docker/classes.csv'
+		classes_path = dataset_dir + '/' + dataset + '/docker/class_4c.csv'
 		validation_generator = CSVGenerator(
 		val_annotations_path,
 		classes_path,
