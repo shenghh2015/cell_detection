@@ -311,14 +311,14 @@ def main(args=None):
         snapshot = splits[-2]
     dataset_dir = '/data/datasets/{}'.format(args.dataset) if args.docker else './datasets/{}'.format(args.dataset)
     
-    train_annot_path = dataset_dir + '/docker/train_4c.csv' if args.docker else dataset_dir + '/train_4c.csv'
-    valid_annot_path = dataset_dir + '/docker/valid_4c.csv' if args.docker else dataset_dir + '/valid_4c.csv'
-    class_path = dataset_dir + '/docker/classes.csv'
+    train_annot_path = dataset_dir + '/docker/train_{}c.csv'.format(args.cls) if args.docker else dataset_dir + '/train_4c.csv'
+    valid_annot_path = dataset_dir + '/docker/valid_{}c.csv'.format(args.cls) if args.docker else dataset_dir + '/valid_4c.csv'
+    class_path = dataset_dir + '/docker/class_{}c.csv'.format(args.cls)
     args.annotations_path = train_annot_path
     args.classes_path = class_path
     args.val_annotations_path = valid_annot_path
-    model_name = 'phi-{}-set-{}-wfpn-{}-ep-{}-stp-{}-bz-{}-snap-{}'.format(args.phi, args.dataset,\
-    						 args.weighted_bifpn, args.epochs, args.steps, args.batch_size, snapshot)
+    model_name = 'phi-{}-set-{}-wfpn-{}-ep-{}-stp-{}-bz-{}-snap-{}-cls-{}'.format(args.phi, args.dataset,\
+    						 args.weighted_bifpn, args.epochs, args.steps, args.batch_size, snapshot, args.cls)
     model_dir = '/data/models/{}/{}'.format(args.dataset, model_name); print(model_dir)
     args.tensorboard_dir = model_dir + '/logs'
     args.snapshot_path = model_dir
