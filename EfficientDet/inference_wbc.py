@@ -6,6 +6,7 @@ import time
 import glob
 
 from natsort import natsorted
+import pickle
 
 from generators.csv_ import CSVGenerator
 from eval.common import evaluate, evaluate_wbc
@@ -117,10 +118,11 @@ def fetch_top_weights(model_name, top = 10):
 def main():
 		os.environ['CUDA_VISIBLE_DEVICES'] = '2'
 		
-		model_name_list = ['phi-0-set-wbc_1024x1024-wfpn-False-ep-200-stp-100-bz-16',
-											 'phi-0-set-wbc2_1024x1024-wfpn-True-ep-200-stp-100-bz-8',
-											 'phi-0-set-wbc3_1024x1024-wfpn-False-ep-200-stp-100-bz-16'
-											]
+# 		model_name_list = ['phi-0-set-wbc_1024x1024-wfpn-False-ep-200-stp-100-bz-16',
+# 											 'phi-0-set-wbc2_1024x1024-wfpn-True-ep-200-stp-100-bz-8',
+# 											 'phi-0-set-wbc3_1024x1024-wfpn-False-ep-200-stp-100-bz-16'
+# 											]
+		model_name_list = ['phi-0-set-wbc2_1024x1024-wfpn-True-ep-200-stp-100-bz-8']
 		for model_name in model_name_list:
 				# model_name = 'phi-0-set-wbc_1024x1024-wfpn-False-ep-200-stp-100-bz-16'
 				# model_name = 'phi-0-set-wbc2_1024x1024-wfpn-True-ep-200-stp-100-bz-8'
@@ -181,7 +183,14 @@ def main():
 						# select those detections
 						boxes = boxes[indices]
 						labels = labels[indices]
-
+						scores = scores[indices]
+						pkl_dic = {'boxes': boxes, 'labels': labels, 'scores': scores}
+						#cv2.namedWindow('image', cv2.WINDOW_NORMAL)
+						model_dir = os.path.dirname(model_path)
+						pr_dir = model_dir + '/predictions'
+						if not os.path.exists(pr_dir):
+								os.system('mkdir -p {}'.format(pr_dir))
+						pickle.dump(pkl_dic, open(pr_dir + '/{}'.format(os.path.basename(image_path)), "wb"))
 						# prediction
 						draw_pr_boxes(src_image, boxes, scores, labels, colors, classes)
 						# ground truth
