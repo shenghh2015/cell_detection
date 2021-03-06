@@ -258,6 +258,9 @@ decoder_filters=(int(nb_filters),int(nb_filters/2), int(nb_filters/4), int(nb_fi
 model = net_func(backbone, classes=n_classes, encoder_weights = None, activation=activation,\
 		decoder_block_type = upsample, feature_version = feature_version, decoder_filters = decoder_filters)
 
+# for feature map visualization
+
+
 model.summary()
 #load best weights
 model.load_weights(best_weight)
@@ -289,7 +292,7 @@ for subset in subsets:
 		augmentation=get_validation_augmentation(test_dim1,test_dim2),
 		preprocessing=get_preprocessing(preprocess_input),
 	)
-
+	
 	test_dataloader = Dataloder(test_dataset, batch_size=1, shuffle=False)
 	print(test_dataloader[0][0].shape)
 	nb_test = nb_train_test if subset == 'train' else len(test_dataloader)
@@ -300,6 +303,9 @@ for subset in subsets:
 	# calculate the pixel-level classification performance
 	pr_masks = model.predict(test_dataloader)
 	pr_masks = pr_masks[test_indices,:]
+	pr_save = True
+	#if pr_save:
+	#		io.imsave('pr_test.png', pr_masks[0,:,:,0])
 	# pr_maps = np.argmax(pr_masks,axis=-1)
 	pr_maps = (pr_masks > 0.5) * 1.0
 
