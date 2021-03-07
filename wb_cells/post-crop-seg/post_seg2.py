@@ -30,20 +30,20 @@ def get_dataset(model_name):
 		return dataset
 		
 
-os.environ["CUDA_VISIBLE_DEVICES"] = '2'
+os.environ["CUDA_VISIBLE_DEVICES"] = '0'
 
 # bounding box model dir
-model_name = 'phi-0-set-wbc2_1024x1024-wfpn-True-ep-200-stp-100-bz-8'
-#model_name = 'phi-0-set-wbc3_1024x1024-wfpn-False-ep-200-stp-100-bz-16'
-# model_name = 'phi-0-set-wbc_1024x1024-wfpn-False-ep-200-stp-100-bz-16'
+model_name = 'phi-1-set-wbc_1024x1024-wfpn-False-ep-400-stp-100-bz-10-snap-imagenet-cls-5'
+# model_name = 'phi-1-set-wbc2_1024x1024-wfpn-False-ep-400-stp-100-bz-10-snap-imagenet-cls-5'
+# model_name = 'phi-1-set-wbc3_1024x1024-wfpn-False-ep-400-stp-100-bz-10-snap-imagenet-cls-5'
 dataset = get_dataset(model_name)
 bbox_root_dir = '/data/models/{}'.format(dataset)
-bbox_dir = bbox_root_dir + '/' + model_name + '/' + 'predictions'
+bbox_dir = bbox_root_dir + '/' + model_name + '/' + 'pred_boxes'
 
 # segmentation model dir
-seg_model_name = 'mask-net-Unet-bone-efficientnetb2-pre-True-epoch-2400-batch-8-lr-0.0001-dim-384-train-None-rot-0-set-wbc2_1024x1024-dv-0-loss-focal+dice-up-upsampling-filters-256-rf-1.0-bk-1.0-flw-4.0-fv-None-new-False-crop-True-cls-2'
-#seg_model_name = 'mask-net-Unet-bone-efficientnetb2-pre-True-epoch-2400-batch-8-lr-0.0001-dim-384-train-None-rot-0-set-wbc3_1024x1024-dv-0-loss-focal+dice-up-upsampling-filters-256-rf-1.0-bk-1.0-flw-4.0-fv-None-new-False-crop-True-cls-2'
-# seg_model_name = 'mask-net-Unet-bone-efficientnetb1-pre-True-epoch-2400-batch-10-lr-0.0001-dim-384-train-None-rot-0-set-wbc_1024x1024-dv-0-loss-focal+dice-up-upsampling-filters-256-rf-1.0-bk-1.0-flw-4.0-fv-None-new-False-crop-True-cls-2'
+seg_model_name = 'mask-net-Unet-bone-efficientnetb7-pre-True-epoch-4800-batch-8-lr-0.0001-dim-384-train-None-rot-20.0-set-wbc_1024x1024-dv-0-loss-focal+dice-up-upsampling-filters-256-rf-1.0-bk-1.0-flw-4.0-fv-None-new-False-crop-True-cls-2'
+# seg_model_name = 'mask-net-Unet-bone-efficientnetb7-pre-True-epoch-4800-batch-8-lr-0.0001-dim-384-train-None-rot-20.0-set-wbc2_1024x1024-dv-0-loss-focal+dice-up-upsampling-filters-256-rf-1.0-bk-1.0-flw-4.0-fv-None-new-False-crop-True-cls-2'
+# seg_model_name = 'mask-net-Unet-bone-efficientnetb7-pre-True-epoch-4800-batch-8-lr-0.0001-dim-384-train-None-rot-20.0-set-wbc3_1024x1024-dv-0-loss-focal+dice-up-upsampling-filters-256-rf-1.0-bk-1.0-flw-4.0-fv-None-new-False-crop-True-cls-2'
 seg_model_dir = '/data/wbc_models/{}'.format(seg_model_name)
 model_file_path = seg_model_dir + '/ready_model.h5'
 
@@ -111,16 +111,17 @@ preprocess_input = sm.get_preprocessing(backbone)
 # test_fns = read_txt(DATA_DIR+'/test_list.txt')
 
 test_fns = os.listdir(bbox_dir)
-label_cache = {0:1, 1:3, 2:4, 3:5}
+# label_cache = {0:1, 1:3, 2:4, 3:5}
+label_cache = {0:1, 1:2, 2:3, 3:4, 4:5}
 pr_maps, gt_maps = [], []
 save_dir = bbox_root_dir + '/' + model_name + '/post_process'
 generate_folder(save_dir)
 for fi, fn in enumerate(test_fns):
 		#img_id = test_fns[1]
-		img_id = test_fns[fi].replace('.png', '')
+		img_id = test_fns[fi].replace('.pkl', '')
 		image = io.imread(images_dir + '/{}.png'.format(img_id))
 		gt_map = io.imread(masks_dir + '/{}.tif'.format(img_id))
-		bboxes = pickle.load(open(bbox_dir + '/{}.png'.format(img_id),'rb'))
+		bboxes = pickle.load(open(bbox_dir + '/{}.pkl'.format(img_id),'rb'))
 		gt_maps.append(gt_map)
 		pr_map = np.zeros(image.shape[:2])
 
@@ -134,8 +135,10 @@ for fi, fn in enumerate(test_fns):
 		dim = 384//2
 
 		# box_id = 0
+		box_mask = np.zeros(image.shape[:2])
 		for box_id in range(len(boxes)):
 				x1, y1, x2, y2 = boxes[box_id]
+				box_mask[int(y1): int(y2), int(x1): int(x2)] = 1
 				cx, cy = int((x1 + x2) // 2), int((y1 + y2) // 2)
 				x1 = cx - dim
 				x2 = cx + dim
@@ -165,12 +168,13 @@ for fi, fn in enumerate(test_fns):
 				pr_mask = np.squeeze(model.predict(patch_input))
 				pr_mask = (pr_mask > 0.5) * 1.0
 				pr_map[y1:y2, x1:x2] = pr_mask * (label_cache[labels[box_id]])
+		box_mask = 1 - box_mask
+		pr_map[np.where(box_mask > 0)] = 0
+		io.imsave(save_dir + '/{}.png'.format(img_id), pr_map * 40)
 		pr_maps.append(pr_map)
-		io.imsave(save_dir + '/{}'.format(fn), pr_map * 40)
-
 gt_maps = np.stack(gt_maps)
 pr_maps = np.stack(pr_maps)
-gt_maps[np.where(gt_maps == 2)] = 0
+# gt_maps[np.where(gt_maps == 2)] = 0
 y_true=gt_maps.flatten(); y_pred = pr_maps.flatten()
 cf_mat = confusion_matrix(y_true, y_pred)
 print(np.round(cf_mat, 3))
@@ -185,3 +189,19 @@ print('recall: {}'.format(np.round(recall_scores, 3)))
 print('mean recall:{:.4f}\n'.format(np.mean(recall_scores)))
 print('f1 score: {}'.format(np.round(f1_scores, 3)))
 print('mean f1-score (pixel):{:.4f}\n'.format(np.mean(f1_scores)))
+
+save_file_path = bbox_root_dir + '/' + model_name + '/post_seg.txt'
+with open(save_file_path, 'w+') as f:
+		f.write('detection model: {}\n'.format(model_name))
+		f.write('segmentation model: {}\n'.format(seg_model_name))
+		f.write('confusion matrix:\n')
+		np.savetxt(f, cf_mat, fmt='%-7d')
+		f.write('precision:\n')
+		np.savetxt(f, np.array(prec_scores).reshape((1,-1)), fmt='%-.3f')
+		f.write('mean precision: {:.3f}\n'.format(np.mean(prec_scores)))
+		f.write('recall:\n')
+		np.savetxt(f, np.array(recall_scores).reshape((1,-1)), fmt='%.3f')
+		f.write('mean recall: {:.3f}\n'.format(np.mean(recall_scores)))
+		f.write('f1_score:\n')
+		np.savetxt(f, np.array(f1_scores).reshape((1,-1)), fmt='%.3f')
+		f.write('mean f1_score: {:.3f}\n'.format(np.mean(f1_scores)))
