@@ -224,7 +224,17 @@ def get_training_augmentation(dim = 512, rot_limit = 45):
     train_transform = [
 
         A.HorizontalFlip(p=0.5),
-
+        
+        # extra data augmentation
+				A.VerticalFlip(p=0.5),              
+				A.RandomRotate90(p=0.5),
+				A.OneOf([
+						A.ElasticTransform(alpha=120, sigma=120 * 0.05, alpha_affine=120 * 0.03, p=0.5),
+						A.GridDistortion(p=0.5),
+						A.OpticalDistortion(distort_limit=2, shift_limit=0.5, p=1)                  
+						], p=0.8),
+				A.CLAHE(p=0.8),
+				# above is extra augmentation 
 
         A.ShiftScaleRotate(scale_limit=0.5, rotate_limit=rot_limit, shift_limit=0.1, p=1, border_mode=0),
 
@@ -319,9 +329,10 @@ class_weights = [1 for i in range(n_classes-1)]
 class_weights.append(args.bk)
 
 if args.net_type == 'PSPNet':
-	model = net_func(BACKBONE, encoder_weights=encoder_weights, input_shape = (args.dim, args.dim, 3), classes=n_classes, activation=activation)
+		model = net_func(BACKBONE, encoder_weights=encoder_weights, input_shape = (args.dim, args.dim, 3), classes=n_classes, activation=activation)
 elif args.net_type == 'FPN':
-    model = net_func(BACKBONE, encoder_weights=encoder_weights, classes=n_classes, activation=activation, pyramid_aggregation = args.pyramid_agg) 
+		pyramid_agg = 'concat'
+		model = net_func(BACKBONE, encoder_weights=encoder_weights, classes=n_classes, activation=activation, pyramid_aggregation = pyramid_agg) 
 else:
     model = net_func(BACKBONE, encoder_weights=encoder_weights, classes=n_classes, activation=activation,\
     		decoder_block_type = args.upsample, feature_version = args.feat_version,\
