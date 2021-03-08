@@ -227,13 +227,13 @@ def get_training_augmentation(dim = 512, rot_limit = 45):
         
         # extra data augmentation
 				A.VerticalFlip(p=0.5),              
-				A.RandomRotate90(p=0.5),
-				A.OneOf([
-						A.ElasticTransform(alpha=120, sigma=120 * 0.05, alpha_affine=120 * 0.03, p=0.5),
-						A.GridDistortion(p=0.5),
-						A.OpticalDistortion(distort_limit=2, shift_limit=0.5, p=1)                  
-						], p=0.8),
-				A.CLAHE(p=0.8),
+				#A.RandomRotate90(p=0.5),
+				#A.OneOf([
+				#		A.ElasticTransform(alpha=120, sigma=120 * 0.05, alpha_affine=120 * 0.03, p=0.5),
+				#		A.GridDistortion(p=0.5),
+				#		A.OpticalDistortion(distort_limit=2, shift_limit=0.5, p=1)                  
+				#		], p=0.8),
+				#A.CLAHE(p=0.8),
 				# above is extra augmentation 
 
         A.ShiftScaleRotate(scale_limit=0.5, rotate_limit=rot_limit, shift_limit=0.1, p=1, border_mode=0),
@@ -241,34 +241,34 @@ def get_training_augmentation(dim = 512, rot_limit = 45):
         A.PadIfNeeded(min_height=dim, min_width=dim, always_apply=True, border_mode=0),
         A.RandomCrop(height=dim, width=dim, always_apply=True),
 
-        A.IAAAdditiveGaussianNoise(p=0.2),
-        A.IAAPerspective(p=0.5),
+        #A.IAAAdditiveGaussianNoise(p=0.2),
+        #A.IAAPerspective(p=0.5),
 
-        A.OneOf(
-            [
-                A.CLAHE(p=1),
-                A.RandomBrightness(p=1),
-                A.RandomGamma(p=1),
-            ],
-            p=0.9,
-        ),
+        #A.OneOf(
+        #    [
+        #        A.CLAHE(p=1),
+        #        A.RandomBrightness(p=1),
+        #        A.RandomGamma(p=1),
+        #    ],
+        #    p=0.9,
+        #),
 
-        A.OneOf(
-            [
-                A.IAASharpen(p=1),
-                A.Blur(blur_limit=3, p=1),
-                A.MotionBlur(blur_limit=3, p=1),
-            ],
-            p=0.9,
-        ),
+        #A.OneOf(
+        #    [
+        #        A.IAASharpen(p=1),
+        #        A.Blur(blur_limit=3, p=1),
+        #        A.MotionBlur(blur_limit=3, p=1),
+        #    ],
+        #    p=0.9,
+        #),
 
-        A.OneOf(
-            [
-                A.RandomContrast(p=1),
-                A.HueSaturationValue(p=1),
-            ],
-            p=0.9,
-        ),
+        #A.OneOf(
+        #    [
+        #        A.RandomContrast(p=1),
+        #        A.HueSaturationValue(p=1),
+        #    ],
+        #    p=0.9,
+        #),
         A.Lambda(mask=round_clip_0_1)
     ]
     return A.Compose(train_transform)
