@@ -5,3 +5,7 @@ python train_crop_mask.py --gpu 1 --net_type Unet --backbone efficientnetb2 --ep
 # Mar 7, 2021
 python train_crop_mask.py --gpu 0 --net_type FPN --backbone efficientnetb1 --epoch 2400 --dim 352 --dataset wbc_1024x1024 --loss focal+dice --batch 10 --lr 1e-3 --focal_weight 4 --bk 1
 python train_crop_mask.py --gpu 1 --net_type Unet --backbone efficientnetb1 --epoch 2400 --dim 352 --dataset wbc_1024x1024 --loss focal+dice --batch 10 --lr 1e-4 --focal_weight 4 --bk 1
+
+# Mar 8, 2021
+python train_crop_mask.py --gpu 0 --net_type FPN --backbone efficientnetb1 --epoch 2400 --dim 352 --dataset wbc_1024x1024 --loss focal+dice --reduce_factor 0.8 --batch 10 --lr 1e-4 --focal_weight 4 --bk 1 --max_min max
+python train_crop_mask.py --gpu 1 --net_type FPN --backbone efficientnetb1 --epoch 2400 --dim 352 --dataset wbc3_1024x1024 --loss focal+dice --reduce_factor 0.8 --batch 10 --lr 1e-4 --focal_weight 4 --bk 1 --max_min max

@@ -61,8 +61,7 @@ print(args)
 
 model_name = 'mask-net-{}-bone-{}-pre-{}-epoch-{}-batch-{}-lr-{}-dim-{}-train-{}-rot-{}-set-{}-dv-{}-loss-{}-up-{}-filters-{}-rf-{}-bk-{}-flw-{}-fv-{}-new-{}-crop-{}-cls-{}-mm-{}'.format(args.net_type,\
 		 	args.backbone, args.pre_train, args.epoch, args.batch_size, args.lr, args.dim,\
-		 	args.train, args.rot, args.dataset, args.data_version, args.loss, args.upsample,\ 
-		 	args.filters, args.reduce_factor, args.bk, args.focal_weight, args.feat_version, args.newest, args.crop, args.cls, args.max_min)
+		 	args.train, args.rot, args.dataset, args.data_version, args.loss, args.upsample, args.filters, args.reduce_factor, args.bk, args.focal_weight, args.feat_version, args.newest, args.crop, args.cls, args.max_min)
 print(model_name)
 
 os.environ['CUDA_VISIBLE_DEVICES'] = args.gpu
