@@ -47,6 +47,7 @@ parser.add_argument("--filters", type=int, default = 256)
 parser.add_argument("--rot", type=float, default = 0)
 parser.add_argument("--lr", type=float, default = 1e-3)
 parser.add_argument("--bk", type=float, default = 0.5)
+parser.add_argument("--max_min", type=str, default = 'min')
 parser.add_argument("--focal_weight", type=float, default = 1)
 parser.add_argument("--crop", type=str2bool, default = True)
 parser.add_argument("--cls", type=int, default = 2)
@@ -58,9 +59,10 @@ parser.add_argument("--reduce_factor", type=float, default = 1.0)
 args = parser.parse_args()
 print(args)
 
-model_name = 'mask-net-{}-bone-{}-pre-{}-epoch-{}-batch-{}-lr-{}-dim-{}-train-{}-rot-{}-set-{}-dv-{}-loss-{}-up-{}-filters-{}-rf-{}-bk-{}-flw-{}-fv-{}-new-{}-crop-{}-cls-{}'.format(args.net_type,\
+model_name = 'mask-net-{}-bone-{}-pre-{}-epoch-{}-batch-{}-lr-{}-dim-{}-train-{}-rot-{}-set-{}-dv-{}-loss-{}-up-{}-filters-{}-rf-{}-bk-{}-flw-{}-fv-{}-new-{}-crop-{}-cls-{}-mm-{}'.format(args.net_type,\
 		 	args.backbone, args.pre_train, args.epoch, args.batch_size, args.lr, args.dim,\
-		 	args.train, args.rot, args.dataset, args.data_version, args.loss, args.upsample, args.filters, args.reduce_factor, args.bk, args.focal_weight, args.feat_version, args.newest, args.crop, args.cls)
+		 	args.train, args.rot, args.dataset, args.data_version, args.loss, args.upsample,\ 
+		 	args.filters, args.reduce_factor, args.bk, args.focal_weight, args.feat_version, args.newest, args.crop, args.cls, args.max_min)
 print(model_name)
 
 os.environ['CUDA_VISIBLE_DEVICES'] = args.gpu
@@ -466,21 +468,24 @@ class HistoryPrintCallback(tf.keras.callbacks.Callback):
 						save_images(model_folder+'/pr-{}.png'.format(epoch), pr_map)
 
 # define callbacks for learning rate scheduling and best checkpoints saving
+max_min = args.max_min
+if max_min == 'max': monitor = 'val_f1-score'
+else: monitor = 'val_loss'
 if args.reduce_factor < 1.0:
 	callbacks = [
-		tf.keras.callbacks.ModelCheckpoint(model_folder+'/best_model-{epoch:03d}.h5', save_weights_only=True, save_best_only=True, mode='min'),
+		tf.keras.callbacks.ModelCheckpoint(model_folder+'/best_model-{epoch:03d}.h5', monitor = monitor, save_weights_only=True, save_best_only=True, mode= max_min),
 		tf.keras.callbacks.ReduceLROnPlateau(factor=args.reduce_factor),
 		HistoryPrintCallback(),
 	]
 else:
 	callbacks = [
-		tf.keras.callbacks.ModelCheckpoint(model_folder+'/best_model-{epoch:03d}.h5', save_weights_only=True, save_best_only=True, mode='min'),
+		tf.keras.callbacks.ModelCheckpoint(model_folder+'/best_model-{epoch:03d}.h5', monitor = monitor, save_weights_only=True, save_best_only=True, mode=max_min),
 		HistoryPrintCallback(),
 	]
 
 if args.newest:
 	callbacks = [
-		tf.keras.callbacks.ModelCheckpoint(model_folder+'/best_model-{epoch:03d}.h5', save_weights_only=True, save_best_only=False, mode='auto'),
+		tf.keras.callbacks.ModelCheckpoint(model_folder+'/best_model-{epoch:03d}.h5', monitor = monitor, save_weights_only=True, save_best_only=False, mode=max_min),
 		HistoryPrintCallback(),
 	]
 
