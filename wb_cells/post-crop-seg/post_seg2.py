@@ -35,14 +35,16 @@ os.environ["CUDA_VISIBLE_DEVICES"] = '0'
 # bounding box model dir
 model_name = 'phi-1-set-wbc_1024x1024-wfpn-False-ep-400-stp-100-bz-10-snap-imagenet-cls-5'
 # model_name = 'phi-1-set-wbc2_1024x1024-wfpn-False-ep-400-stp-100-bz-10-snap-imagenet-cls-5'
+# model_name = 'phi-0-set-wbc2_1024x1024-wfpn-False-ep-400-stp-100-bz-8-snap-imagenet-cls-5'
 # model_name = 'phi-1-set-wbc3_1024x1024-wfpn-False-ep-400-stp-100-bz-10-snap-imagenet-cls-5'
 dataset = get_dataset(model_name)
 bbox_root_dir = '/data/models/{}'.format(dataset)
 bbox_dir = bbox_root_dir + '/' + model_name + '/' + 'pred_boxes'
 
 # segmentation model dir
-seg_model_name = 'mask-net-Unet-bone-efficientnetb7-pre-True-epoch-4800-batch-8-lr-0.0001-dim-384-train-None-rot-20.0-set-wbc_1024x1024-dv-0-loss-focal+dice-up-upsampling-filters-256-rf-1.0-bk-1.0-flw-4.0-fv-None-new-False-crop-True-cls-2'
-# seg_model_name = 'mask-net-Unet-bone-efficientnetb7-pre-True-epoch-4800-batch-8-lr-0.0001-dim-384-train-None-rot-20.0-set-wbc2_1024x1024-dv-0-loss-focal+dice-up-upsampling-filters-256-rf-1.0-bk-1.0-flw-4.0-fv-None-new-False-crop-True-cls-2'
+seg_model_name = 'mask-net-Unet-bone-efficientnetb7-pre-True-epoch-4800-batch-8-lr-0.0001-dim-384-train-None-rot-25.0-set-wbc_1024x1024-dv-0-loss-focal+dice-up-upsampling-filters-256-rf-1.0-bk-1.0-flw-4.0-fv-None-new-False-crop-True-cls-2'
+# seg_model_name = 'mask-net-Unet-bone-efficientnetb7-pre-True-epoch-4800-batch-8-lr-0.0001-dim-384-train-None-rot-20.0-set-wbc_1024x1024-dv-0-loss-focal+dice-up-upsampling-filters-256-rf-1.0-bk-1.0-flw-4.0-fv-None-new-False-crop-True-cls-2'
+#seg_model_name = 'mask-net-Unet-bone-efficientnetb7-pre-True-epoch-4800-batch-8-lr-0.0001-dim-384-train-None-rot-20.0-set-wbc2_1024x1024-dv-0-loss-focal+dice-up-upsampling-filters-256-rf-1.0-bk-1.0-flw-4.0-fv-None-new-False-crop-True-cls-2'
 # seg_model_name = 'mask-net-Unet-bone-efficientnetb7-pre-True-epoch-4800-batch-8-lr-0.0001-dim-384-train-None-rot-20.0-set-wbc3_1024x1024-dv-0-loss-focal+dice-up-upsampling-filters-256-rf-1.0-bk-1.0-flw-4.0-fv-None-new-False-crop-True-cls-2'
 seg_model_dir = '/data/wbc_models/{}'.format(seg_model_name)
 model_file_path = seg_model_dir + '/ready_model.h5'
