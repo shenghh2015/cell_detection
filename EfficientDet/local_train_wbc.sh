@@ -38,7 +38,19 @@ python3 train_wbc.py --docker --snapshot imagenet --dataset wbc_1024x1024 --phi 
 python3 train_wbc.py --docker --snapshot imagenet --dataset wbc2_1024x1024 --phi 0 --gpu 1 --batch-size 8 --steps 100 --epoch 200
 python3 train_wbc.py --docker --snapshot imagenet --dataset wbc3_1024x1024 --phi 0 --gpu 2 --batch-size 8 --steps 100 --epoch 200
 
-# Mar 5, 2021
-python3 train_wbc.py --docker --snapshot imagenet --dataset wbc_1024x1024 --cls 5 --phi 0 --gpu 0 --batch-size 8 --steps 100 --epoch 400 --valid False
-python3 train_wbc.py --docker --snapshot imagenet --dataset wbc2_1024x1024 --cls 5 --phi 0 --gpu 1 --batch-size 8 --steps 100 --epoch 400
-python3 train_wbc.py --docker --snapshot imagenet --dataset wbc3_1024x1024 --cls 5 --phi 0 --gpu 2 --batch-size 8 --steps 100 --epoch 400
+# Mar 8, 2021
+python3 train_wbc.py --docker --snapshot imagenet --dataset wbc_1024x1024 --cls 5 --phi 0 --gpu 2 --batch-size 8 --steps 100 --epoch 400 --valid False
+python3 train_wbc.py --docker --snapshot imagenet --dataset wbc2_1024x1024 --cls 5 --phi 0 --gpu 2 --batch-size 8 --steps 100 --epoch 400 --valid False
+python3 train_wbc.py --docker --snapshot imagenet --dataset wbc2_1024x1024 --cls 4 --phi 0 --gpu 1 --batch-size 8 --steps 100 --epoch 400 --valid False
+python3 train_wbc.py --docker --snapshot imagenet --dataset wbc4_1024x1024 --cls 4 --phi 0 --gpu 0 --batch-size 8 --steps 100 --epoch 400 --valid False
+
+# jobs to be finished
+# for no validation data
+# 4 classes: wbc, wb2, wbc4
+# 2 class segmentation: wbc, wbc2, wbc4
+# 5 class detection: wbc, wbc2, wbc4
+
+# for validation data
+# 4 classes: wbc4
+# 5 classes: wbc4
+# 2 classes: wbc4
