@@ -33,7 +33,13 @@
 # JOB: python3 train_wbc.py --docker --snapshot imagenet --phi 2 --gpu 3 --batch-size 4 --epoch 400 --steps 100 --dataset wbc_1024x1024 --cls 5
 
 # Mar 7, 2021
-JOB: python3 train_wbc.py --docker --snapshot imagenet --phi 2 --weighted-bifpn --gpu 0 --batch-size 6 --epoch 400 --steps 100 --dataset wbc_1024x1024 --cls 5
-JOB: python3 train_wbc.py --docker --snapshot imagenet --phi 2 --weighted-bifpn --gpu 1 --batch-size 6 --epoch 400 --steps 100 --dataset wbc2_1024x1024 --cls 5
-JOB: python3 train_wbc.py --docker --snapshot imagenet --phi 2 --weighted-bifpn --gpu 2 --batch-size 6 --epoch 400 --steps 100 --dataset wbc3_1024x1024 --cls 5
-JOB: python3 train_wbc.py --docker --snapshot imagenet --phi 3 --weighted-bifpn --gpu 3 --batch-size 4 --epoch 400 --steps 100 --dataset wbc_1024x1024 --cls 5
+# JOB: python3 train_wbc.py --docker --snapshot imagenet --phi 2 --weighted-bifpn --gpu 0 --batch-size 6 --epoch 400 --steps 100 --dataset wbc_1024x1024 --cls 5
+# JOB: python3 train_wbc.py --docker --snapshot imagenet --phi 2 --weighted-bifpn --gpu 1 --batch-size 6 --epoch 400 --steps 100 --dataset wbc2_1024x1024 --cls 5
+# JOB: python3 train_wbc.py --docker --snapshot imagenet --phi 2 --weighted-bifpn --gpu 2 --batch-size 6 --epoch 400 --steps 100 --dataset wbc3_1024x1024 --cls 5
+# JOB: python3 train_wbc.py --docker --snapshot imagenet --phi 3 --weighted-bifpn --gpu 3 --batch-size 4 --epoch 400 --steps 100 --dataset wbc_1024x1024 --cls 5
+
+# Mar 9, 2021
+JOB: python3 train_wbc.py --docker --snapshot imagenet --phi 1 --weighted-bifpn --gpu 0 --batch-size 10 --epoch 400 --steps 100 --dataset wbc_1024x1024 --cls 4 --valid False
+JOB: python3 train_wbc.py --docker --snapshot imagenet --phi 1 --weighted-bifpn --gpu 1 --batch-size 10 --epoch 400 --steps 100 --dataset wbc2_1024x1024 --cls 4 --valid False
+JOB: python3 train_wbc.py --docker --snapshot imagenet --phi 1 --weighted-bifpn --gpu 2 --batch-size 10 --epoch 400 --steps 100 --dataset wbc_1024x1024 --cls 5 --valid False
+JOB: python3 train_wbc.py --docker --snapshot imagenet --phi 1 --weighted-bifpn --gpu 3 --batch-size 10 --epoch 400 --steps 100 --dataset wbc2_1024x1024 --cls 5 --valid False

@@ -125,10 +125,18 @@ def main():
 # 											 'phi-0-set-wbc2_1024x1024-wfpn-True-ep-200-stp-100-bz-8',
 # 											 'phi-0-set-wbc3_1024x1024-wfpn-False-ep-200-stp-100-bz-16'
 # 											]
+# 		cls = 5
+# 		model_name_list = ['phi-1-set-wbc_1024x1024-wfpn-False-ep-400-stp-100-bz-10-snap-imagenet-cls-5',
+# 											 'phi-1-set-wbc2_1024x1024-wfpn-False-ep-400-stp-100-bz-10-snap-imagenet-cls-5',
+# 											 'phi-1-set-wbc3_1024x1024-wfpn-False-ep-400-stp-100-bz-10-snap-imagenet-cls-5'
+# 											]
 		cls = 5
-		model_name_list = ['phi-1-set-wbc_1024x1024-wfpn-False-ep-400-stp-100-bz-10-snap-imagenet-cls-5',
-											 'phi-1-set-wbc2_1024x1024-wfpn-False-ep-400-stp-100-bz-10-snap-imagenet-cls-5',
-											 'phi-1-set-wbc3_1024x1024-wfpn-False-ep-400-stp-100-bz-10-snap-imagenet-cls-5'
+# 		model_name_list = ['phi-2-set-wbc_1024x1024-wfpn-True-ep-400-stp-100-bz-6-snap-imagenet-cls-5',
+# 											 'phi-2-set-wbc2_1024x1024-wfpn-True-ep-400-stp-100-bz-6-snap-imagenet-cls-5',
+# 											 'phi-2-set-wbc3_1024x1024-wfpn-True-ep-400-stp-100-bz-6-snap-imagenet-cls-5'
+# 											]
+		model_name_list = [
+											 'phi-0-set-wbc2_1024x1024-wfpn-False-ep-400-stp-100-bz-8-snap-imagenet-cls-5'
 											]
 		for model_name in model_name_list:
 				# parse the model name to get parameters
