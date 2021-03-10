@@ -316,13 +316,12 @@ def main(args=None):
     if len(splits) > 1:
         snapshot = splits[-2]
     dataset_dir = '/data/datasets/{}'.format(args.dataset) if args.docker else './datasets/{}'.format(args.dataset)
-    
     if args.valid:
-    		train_annot_path = dataset_dir + '/docker/train_{}c.csv'.format(args.cls) if args.docker else dataset_dir + '/train_4c.csv'
-    		valid_annot_path = dataset_dir + '/docker/valid_{}c.csv'.format(args.cls) if args.docker else dataset_dir + '/valid_4c.csv'
+        train_annot_path = dataset_dir + '/docker/train_{}c.csv'.format(args.cls) if args.docker else dataset_dir + '/train_4c.csv'
+        valid_annot_path = dataset_dir + '/docker/valid_{}c.csv'.format(args.cls) if args.docker else dataset_dir + '/valid_4c.csv'
     else:
-				train_annot_path = dataset_dir + '/docker/train2_{}c.csv'.format(args.cls) if args.docker else dataset_dir + '/train2_4c.csv'
-				valid_annot_path = dataset_dir + '/docker/test_{}c.csv'.format(args.cls) if args.docker else dataset_dir + '/test_4c.csv'
+        train_annot_path = dataset_dir + '/docker/train2_{}c.csv'.format(args.cls) if args.docker else dataset_dir + '/train2_4c.csv'
+        valid_annot_path = dataset_dir + '/docker/test_{}c.csv'.format(args.cls) if args.docker else dataset_dir + '/test_4c.csv'
 
     class_path = dataset_dir + '/docker/class_{}c.csv'.format(args.cls)
     args.annotations_path = train_annot_path
