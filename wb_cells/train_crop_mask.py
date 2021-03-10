@@ -13,6 +13,8 @@ sm.set_framework('tf.keras')
 from natsort import natsorted
 import glob
 
+from models import unet1
+
 from helper_function import plot_deeply_history, plot_history, save_history
 from helper_function import precision, recall, f1_score
 from sklearn.metrics import confusion_matrix
@@ -41,9 +43,10 @@ parser.add_argument("--epoch", type=int, default = 2)
 parser.add_argument("--dim", type=int, default = 512)
 parser.add_argument("--batch_size", type=int, default = 2)
 parser.add_argument("--dataset", type=str, default = 'wbc_1024x1024')
+parser.add_argument("--valid", type=str2bool, default = True)
 parser.add_argument("--data_version", type=int, default = 0)
 parser.add_argument("--upsample", type=str, default = 'upsampling')
-parser.add_argument("--filters", type=int, default = 256)
+parser.add_argument("--filters", type=int, default = 32)
 parser.add_argument("--rot", type=float, default = 0)
 parser.add_argument("--lr", type=float, default = 1e-3)
 parser.add_argument("--bk", type=float, default = 0.5)
@@ -59,9 +62,10 @@ parser.add_argument("--reduce_factor", type=float, default = 1.0)
 args = parser.parse_args()
 print(args)
 
-model_name = 'mask-net-{}-bone-{}-pre-{}-epoch-{}-batch-{}-lr-{}-dim-{}-train-{}-rot-{}-set-{}-dv-{}-loss-{}-up-{}-filters-{}-rf-{}-bk-{}-flw-{}-fv-{}-new-{}-crop-{}-cls-{}-mm-{}'.format(args.net_type,\
+model_name = 'mask-net-{}-bone-{}-pre-{}-epoch-{}-batch-{}-lr-{}-dim-{}-train-{}-rot-{}-set-{}-dv-{}-loss-{}-up-{}-filters-{}-rf-{}-bk-{}-flw-{}-fv-{}-new-{}-crop-{}-cls-{}-mm-{}-valid-{}'.format(args.net_type,\
 		 	args.backbone, args.pre_train, args.epoch, args.batch_size, args.lr, args.dim,\
-		 	args.train, args.rot, args.dataset, args.data_version, args.loss, args.upsample, args.filters, args.reduce_factor, args.bk, args.focal_weight, args.feat_version, args.newest, args.crop, args.cls, args.max_min)
+		 	args.train, args.rot, args.dataset, args.data_version, args.loss, args.upsample,\
+		 	args.filters, args.reduce_factor, args.bk, args.focal_weight, args.feat_version, args.newest, args.crop, args.cls, args.max_min, args.valid)
 print(model_name)
 
 os.environ['CUDA_VISIBLE_DEVICES'] = args.gpu
@@ -81,9 +85,14 @@ DATA_DIR = '/data/datasets/{}'.format(args.dataset) if args.docker else '../../d
 images_dir = DATA_DIR+'/images' if not args.crop else DATA_DIR+'/crop/images'
 masks_dir = DATA_DIR+'/seg_maps' if not args.crop else DATA_DIR+'/crop/seg_maps'
 
-train_fns = read_txt(os.path.join(DATA_DIR, 'train_list.txt'))
-val_fns = read_txt(os.path.join(DATA_DIR, 'valid_list.txt'))
-test_fns = read_txt(os.path.join(DATA_DIR, 'test_list.txt'))
+if args.valid:
+		train_fns = read_txt(os.path.join(DATA_DIR, 'train_list.txt'))
+		val_fns = read_txt(os.path.join(DATA_DIR, 'valid_list.txt'))
+		test_fns = read_txt(os.path.join(DATA_DIR, 'test_list.txt'))
+else:
+		train_fns = read_txt(os.path.join(DATA_DIR, 'train2_list.txt'))
+		val_fns = read_txt(os.path.join(DATA_DIR, 'test_list.txt'))
+		test_fns = read_txt(os.path.join(DATA_DIR, 'test_list.txt'))
 
 print('train:{}, valid:{}, test:{}'.format(len(train_fns),len(val_fns), len(test_fns)))
 
@@ -242,34 +251,34 @@ def get_training_augmentation(dim = 512, rot_limit = 45):
         A.PadIfNeeded(min_height=dim, min_width=dim, always_apply=True, border_mode=0),
         A.RandomCrop(height=dim, width=dim, always_apply=True),
 
-        #A.IAAAdditiveGaussianNoise(p=0.2),
-        #A.IAAPerspective(p=0.5),
+        A.IAAAdditiveGaussianNoise(p=0.2),
+        A.IAAPerspective(p=0.5),
 
-        #A.OneOf(
-        #    [
-        #        A.CLAHE(p=1),
-        #        A.RandomBrightness(p=1),
-        #        A.RandomGamma(p=1),
-        #    ],
-        #    p=0.9,
-        #),
+        A.OneOf(
+           [
+               A.CLAHE(p=1),
+               A.RandomBrightness(p=1),
+               A.RandomGamma(p=1),
+           ],
+           p=0.9,
+        ),
 
-        #A.OneOf(
-        #    [
-        #        A.IAASharpen(p=1),
-        #        A.Blur(blur_limit=3, p=1),
-        #        A.MotionBlur(blur_limit=3, p=1),
-        #    ],
-        #    p=0.9,
-        #),
+        A.OneOf(
+           [
+               A.IAASharpen(p=1),
+               A.Blur(blur_limit=3, p=1),
+               A.MotionBlur(blur_limit=3, p=1),
+           ],
+           p=0.9,
+        ),
 
-        #A.OneOf(
-        #    [
-        #        A.RandomContrast(p=1),
-        #        A.HueSaturationValue(p=1),
-        #    ],
-        #    p=0.9,
-        #),
+        A.OneOf(
+           [
+               A.RandomContrast(p=1),
+               A.HueSaturationValue(p=1),
+           ],
+           p=0.9,
+        ),
         A.Lambda(mask=round_clip_0_1)
     ]
     return A.Compose(train_transform)
@@ -312,7 +321,10 @@ CLASSES = ['bk']
 LR = args.lr
 EPOCHS = args.epoch
 
-preprocess_input = sm.get_preprocessing(BACKBONE)
+if not args.net_type == 'unet1':
+		preprocess_input = sm.get_preprocessing(BACKBONE)
+else:
+		preprocess_input = None
 
 # define network parameters
 # n_classes = 1 if len(CLASSES) == 1 else (len(CLASSES) + 1)  # case for binary and multiclass segmentation
@@ -329,7 +341,9 @@ encoder_weights='imagenet' if args.pre_train else None
 class_weights = [1 for i in range(n_classes-1)]
 class_weights.append(args.bk)
 
-if args.net_type == 'PSPNet':
+if args.net_type == 'unet1':
+		model = unet1(base_filters = args.filters)
+elif args.net_type == 'PSPNet':
 		model = net_func(BACKBONE, encoder_weights=encoder_weights, input_shape = (args.dim, args.dim, 3), classes=n_classes, activation=activation)
 elif args.net_type == 'FPN':
 		pyramid_agg = 'concat'
@@ -365,12 +379,19 @@ elif args.loss == 'focal':
 	total_loss = sm.losses.BinaryFocalLoss() if n_classes == 1 else sm.losses.CategoricalFocalLoss()
 elif args.loss == 'ce':
 	total_loss = tf.keras.losses.CategoricalCrossentropy()
+elif args.loss == 'bce':
+	total_loss = tf.keras.losses.BinaryCrossentropy()
 
 metrics = [sm.metrics.IOUScore(threshold=0.5), sm.metrics.FScore(threshold=0.5)]
 
 # compile keras model with defined optimozer, loss and metrics
 model.compile(optimizer=optim, loss=total_loss, metrics = metrics)
 
+augment = get_training_augmentation(args.dim, args.rot)
+# if not args.net_type == 'unet1':
+# 		augment = get_training_augmentation(args.dim, args.rot)
+# else:
+# 		augment = None
 # Dataset for train images
 train_dataset = Dataset(
     images_dir, 
@@ -378,7 +399,8 @@ train_dataset = Dataset(
     train_fns,
     classes=CLASSES,
     nb_data=args.train,
-    augmentation=get_training_augmentation(args.dim, args.rot),
+    augmentation = augment,
+    #augmentation=get_training_augmentation(args.dim, args.rot),
     preprocessing=get_preprocessing(preprocess_input),
 )
 
