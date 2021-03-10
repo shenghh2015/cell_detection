@@ -136,7 +136,7 @@ class Dataset:
         if len(image.shape) == 2:
         	image = np.stack([image,image,image],axis =-1)
 
-        if down > 2:
+        if self.down > 2:
         	image = image[::2, ::2, :]
         	mask = mask[::2, ::2]
      
