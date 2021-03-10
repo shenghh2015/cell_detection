@@ -39,6 +39,6 @@ python3 train_wbc.py --docker --snapshot imagenet --dataset wbc2_1024x1024 --phi
 python3 train_wbc.py --docker --snapshot imagenet --dataset wbc3_1024x1024 --phi 0 --gpu 2 --batch-size 8 --steps 100 --epoch 200
 
 # Mar 5, 2021
-python3 train_wbc.py --docker --snapshot imagenet --dataset wbc_1024x1024 --cls 5 --phi 0 --gpu 0 --batch-size 8 --steps 100 --epoch 400
+python3 train_wbc.py --docker --snapshot imagenet --dataset wbc_1024x1024 --cls 5 --phi 0 --gpu 0 --batch-size 8 --steps 100 --epoch 400 --valid False
 python3 train_wbc.py --docker --snapshot imagenet --dataset wbc2_1024x1024 --cls 5 --phi 0 --gpu 1 --batch-size 8 --steps 100 --epoch 400
 python3 train_wbc.py --docker --snapshot imagenet --dataset wbc3_1024x1024 --cls 5 --phi 0 --gpu 2 --batch-size 8 --steps 100 --epoch 400
