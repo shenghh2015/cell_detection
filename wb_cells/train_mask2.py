@@ -39,6 +39,7 @@ parser.add_argument("--epoch", type=int, default = 2)
 parser.add_argument("--dim", type=int, default = 512)
 parser.add_argument("--batch_size", type=int, default = 2)
 parser.add_argument("--dataset", type=str, default = 'wbc3_1024x1024')
+parser.add_argument("--down", type=int, default = 1)
 parser.add_argument("--data_version", type=int, default = 0)
 parser.add_argument("--upsample", type=str, default = 'upsampling')
 parser.add_argument("--filters", type=int, default = 256)
@@ -54,9 +55,10 @@ parser.add_argument("--reduce_factor", type=float, default = 1.0)
 args = parser.parse_args()
 print(args)
 
-model_name = 'mask-net-{}-bone-{}-pre-{}-epoch-{}-batch-{}-lr-{}-dim-{}-train-{}-rot-{}-set-{}-dv-{}-loss-{}-up-{}-filters-{}-rf-{}-bk-{}-flw-{}-fv-{}-new-{}'.format(args.net_type,\
+model_name = 'mask-net-{}-bone-{}-pre-{}-epoch-{}-batch-{}-lr-{}-dim-{}-train-{}-rot-{}-set-{}-dv-{}-loss-{}-up-{}-filters-{}-rf-{}-bk-{}-flw-{}-fv-{}-new-{}-down-{}'.format(args.net_type,\
 		 	args.backbone, args.pre_train, args.epoch, args.batch_size, args.lr, args.dim,\
-		 	args.train, args.rot, args.dataset, args.data_version, args.loss, args.upsample, args.filters, args.reduce_factor, args.bk, args.focal_weight, args.feat_version, args.newest)
+		 	args.train, args.rot, args.dataset, args.data_version, args.loss, args.upsample,\
+		 	args.filters, args.reduce_factor, args.bk, args.focal_weight, args.feat_version, args.newest, args.down)
 print(model_name)
 
 os.environ['CUDA_VISIBLE_DEVICES'] = args.gpu
@@ -65,6 +67,10 @@ if '1024x1024' in args.dataset:
 	val_dim1, val_dim2 = 1024, 1024
 	test_dim1, test_dim2 = 1024, 1024
 	dim1, dim2 = 1024, 1024
+	if args.down > 1:
+		val_dim1, val_dim2 = val_dim1//2, val_dim2//2
+		test_dim1, test_dim2 = test_dim1//2, test_dim2//2
+		dim1, dim2 = dim1//2, dim2//2
 
 DATA_DIR = '/data/datasets/{}'.format(args.dataset) if args.docker else '../../datasets/{}'.format(args.dataset)
 
@@ -101,6 +107,7 @@ class Dataset:
             fn_list,
             classes=None,
             nb_data=None,
+            down = 1,
             augmentation=None, 
             preprocessing=None,
     ):
@@ -114,6 +121,7 @@ class Dataset:
         print(len(self.images_fps)); print(len(self.masks_fps))
         # convert str names to class values on masks
         self.class_values = [self.CLASSES.index(cls.lower()) for cls in classes]
+        self.down = down
         self.augmentation = augmentation
         self.preprocessing = preprocessing
     
@@ -124,9 +132,14 @@ class Dataset:
         mask = io.imread(self.masks_fps[i])
         # image to RGB
         image = np.uint8((image-image.min())*255/(image.max()-image.min()))
+        
         if len(image.shape) == 2:
         	image = np.stack([image,image,image],axis =-1)
-        
+
+        if down > 2:
+        	image = image[::2, ::2, :]
+        	mask = mask[::2, ::2]
+     
         # extract certain classes from mask (e.g. cars)
         # masks = [(mask == v) for v in self.class_values]
         masks = [(mask > 0) * 1.]
@@ -354,6 +367,7 @@ train_dataset = Dataset(
     train_fns,
     classes=CLASSES,
     nb_data=args.train,
+    down = args.down,
     augmentation=get_training_augmentation(args.dim, args.rot),
     preprocessing=get_preprocessing(preprocess_input),
 )
@@ -366,7 +380,8 @@ valid_dataset = Dataset(
     images_dir, 
     masks_dir,
     val_fns,
-    classes=CLASSES, 
+    classes=CLASSES,
+    down = args.down, 
     augmentation=get_validation_augmentation(val_dim1),
     preprocessing=get_preprocessing(preprocess_input),
 )
@@ -402,12 +417,48 @@ def save_images(file_name, vols):
 		save_img = concat_tile(slice_list)		
 		cv2.imwrite(file_name, save_img)
 
+# def map2rgb(maps):
+# 	shp = maps.shape
+# 	rgb_maps = np.zeros((shp[0], shp[1], shp[2], 3), dtype=np.uint8)
+# 	rgb_maps[:,:,:,0] = np.uint8((maps==0)*255)
+# 	rgb_maps[:,:,:,1] = np.uint8((maps==1)*255)
+# 	rgb_maps[:,:,:,2] = np.uint8((maps==2)*255)
+# 	return rgb_maps
+# 	
+# class HistoryPrintCallback(tf.keras.callbacks.Callback):
+# 		def __init__(self):
+# 				super(HistoryPrintCallback, self).__init__()
+# 				self.history = {}
+# 
+# 		def on_epoch_end(self, epoch, logs=None):
+# 				if logs:
+# 						for key in logs.keys():
+# 								if epoch == 0:
+# 										self.history[key] = []
+# 								self.history[key].append(logs[key])
+# 				if epoch%5 == 0:
+# 						plot_history_for_callback(model_folder+'/train_history.png', self.history)
+# 						save_history_for_callback(model_folder, self.history)
+# 						gt_vols, pr_vols = [],[]
+# 						for i in range(0, len(valid_dataset),int(len(valid_dataset)/36)):
+# 								gt_vols.append(valid_dataloader[i][1])
+# 								pr_vols.append(self.model.predict(valid_dataloader[i]))
+# 						gt_vols = np.concatenate(gt_vols, axis = 0); gt_map = map2rgb(np.squeeze((gt_vols > 0.5)*1.0))
+# 						pr_vols = np.concatenate(pr_vols, axis = 0); pr_map = map2rgb(np.squeeze((pr_vols > 0.5)*1.0))
+# 						if epoch == 0:
+# 								save_images(model_folder+'/ground_truth.png'.format(epoch), gt_map)
+# 						save_images(model_folder+'/pr-{}.png'.format(epoch), pr_map)
+
 def map2rgb(maps):
 	shp = maps.shape
 	rgb_maps = np.zeros((shp[0], shp[1], shp[2], 3), dtype=np.uint8)
-	rgb_maps[:,:,:,0] = np.uint8((maps==0)*255)
+	#rgb_maps[:,:,:,0] = np.uint8((maps==0)*255)
 	rgb_maps[:,:,:,1] = np.uint8((maps==1)*255)
 	rgb_maps[:,:,:,2] = np.uint8((maps==2)*255)
+	rgb_maps[:,0,:,:] = 255
+	rgb_maps[:,:,0,:] = 255
+	rgb_maps[:,-1,:,:] = 255
+	rgb_maps[:,:,-1,:] = 255
 	return rgb_maps
 	
 class HistoryPrintCallback(tf.keras.callbacks.Callback):
@@ -425,13 +476,18 @@ class HistoryPrintCallback(tf.keras.callbacks.Callback):
 						plot_history_for_callback(model_folder+'/train_history.png', self.history)
 						save_history_for_callback(model_folder, self.history)
 						gt_vols, pr_vols = [],[]
+						ph_vols = []
 						for i in range(0, len(valid_dataset),int(len(valid_dataset)/36)):
+								ph = valid_dataloader[i][0]; ph = np.uint8(255 * (ph - ph.min())/(ph.max() - ph.min()))
+								ph_vols.append(ph)
 								gt_vols.append(valid_dataloader[i][1])
 								pr_vols.append(self.model.predict(valid_dataloader[i]))
 						gt_vols = np.concatenate(gt_vols, axis = 0); gt_map = map2rgb(np.squeeze((gt_vols > 0.5)*1.0))
 						pr_vols = np.concatenate(pr_vols, axis = 0); pr_map = map2rgb(np.squeeze((pr_vols > 0.5)*1.0))
+						ph_vols = np.concatenate(ph_vols, axis = 0)
 						if epoch == 0:
-								save_images(model_folder+'/ground_truth.png'.format(epoch), gt_map)
+								save_images(model_folder+'/ground_truth.png', gt_map)
+								save_images(model_folder+'/image.png', ph_vols)
 						save_images(model_folder+'/pr-{}.png'.format(epoch), pr_map)
 
 # define callbacks for learning rate scheduling and best checkpoints saving

@@ -20,3 +20,6 @@ python train_crop_mask.py --gpu 2 --net_type AtUnet --backbone efficientnetb0 --
 python train_crop_mask.py --gpu 0 --net_type Unet --backbone efficientnetb0 --epoch 2400 --dim 384 --dataset wbc_1024x1024 --loss focal+dice --batch 16 --lr 1e-4 --focal_weight 4 --bk 1 --max_min max --valid False
 python train_crop_mask.py --gpu 1 --net_type Unet --backbone efficientnetb0 --epoch 2400 --dim 384 --dataset wbc2_1024x1024 --loss focal+dice --batch 16 --lr 1e-4 --focal_weight 4 --bk 1 --max_min max --valid False
 python train_crop_mask.py --gpu 2 --net_type Unet --backbone efficientnetb0 --epoch 2400 --dim 384 --dataset wbc_1024x1024 --loss focal+dice --batch 32 --lr 1e-4 --focal_weight 4 --bk 1 --max_min max --valid False
+
+python train_crop_mask.py --docker False --gpu 6 --net_type Unet --backbone efficientnetb0 --epoch 2400 --dim 384 --dataset wbc4_1024x1024 --loss focal+dice --batch 16 --lr 1e-4 --focal_weight 4 --bk 1 --max_min max --valid False
+python train_crop_mask.py --docker False --gpu 0 --net_type Unet --backbone efficientnetb0 --epoch 2400 --dim 384 --dataset wbc4_1024x1024 --loss focal+dice --batch 16 --lr 1e-4 --focal_weight 4 --bk 1 --max_min max --valid True

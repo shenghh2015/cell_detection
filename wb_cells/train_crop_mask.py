@@ -477,7 +477,8 @@ class HistoryPrintCallback(tf.keras.callbacks.Callback):
 						gt_vols, pr_vols = [],[]
 						ph_vols = []
 						for i in range(0, len(valid_dataset),int(len(valid_dataset)/36)):
-								ph_vols.append(valid_dataloader[i][0])
+								ph = valid_dataloader[i][0]; ph = np.uint8(255 * (ph - ph.min())/(ph.max() - ph.min()))
+								ph_vols.append(ph)
 								gt_vols.append(valid_dataloader[i][1])
 								pr_vols.append(self.model.predict(valid_dataloader[i]))
 						gt_vols = np.concatenate(gt_vols, axis = 0); gt_map = map2rgb(np.squeeze((gt_vols > 0.5)*1.0))
@@ -492,6 +493,7 @@ class HistoryPrintCallback(tf.keras.callbacks.Callback):
 max_min = args.max_min
 if max_min == 'max': monitor = 'val_f1-score'
 else: monitor = 'val_loss'
+
 if args.reduce_factor < 1.0:
 	callbacks = [
 		tf.keras.callbacks.ModelCheckpoint(model_folder+'/best_model-{epoch:03d}.h5', monitor = monitor, save_weights_only=True, save_best_only=True, mode= max_min),
