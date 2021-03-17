@@ -334,7 +334,10 @@ def main(args=None):
     args.val_annotations_path = valid_annot_path
     model_name = 'phi-{}-set-{}-wfpn-{}-ep-{}-stp-{}-bz-{}-snap-{}-cls-{}-valid-{}-cross-{}'.format(args.phi, args.dataset,\
     						 args.weighted_bifpn, args.epochs, args.steps, args.batch_size, snapshot, args.cls, args.valid, args.cross)
-    model_dir = '/data/cv_models/{}/{}'.format(args.dataset, model_name) if args.cross > 0 else '/data/models/{}/{}'.format(args.dataset, model_name)
+    if args.docker:
+        model_dir = '/data/cv_models/{}/{}'.format(args.dataset, model_name) if args.cross > 0 else '/data/models/{}/{}'.format(args.dataset, model_name)
+    else:
+        model_dir = '/home/sh38/wb_cells/cv_models/{}/{}'.format(args.dataset, model_name) if args.cross > 0 else '/home/sh38/wb_cells/models/{}/{}'.format(args.dataset, model_name)
     print(model_dir)
     args.tensorboard_dir = model_dir + '/logs'
     args.snapshot_path = model_dir
