@@ -45,7 +45,13 @@
 # JOB: python3 train_wbc.py --docker --snapshot imagenet --phi 1 --weighted-bifpn --gpu 3 --batch-size 10 --epoch 400 --steps 100 --dataset wbc2_1024x1024 --cls 5 --valid False
 
 # Mar 9, 2021
-JOB: python3 train_wbc.py --docker --snapshot imagenet --phi 1 --gpu 0 --batch-size 10 --epoch 400 --steps 100 --dataset wbc4_1024x1024 --cls 4 --valid False
-JOB: python3 train_wbc.py --docker --snapshot imagenet --phi 1 --gpu 1 --batch-size 10 --epoch 400 --steps 100 --dataset wbc4_1024x1024 --cls 5 --valid False
-JOB: python3 train_wbc.py --docker --snapshot imagenet --phi 1 --gpu 2 --batch-size 10 --epoch 400 --steps 100 --dataset wbc4_1024x1024 --cls 4 --valid True
-JOB: python3 train_wbc.py --docker --snapshot imagenet --phi 1 --gpu 3 --batch-size 10 --epoch 400 --steps 100 --dataset wbc4_1024x1024 --cls 5 --valid True
+# JOB: python3 train_wbc.py --docker --snapshot imagenet --phi 1 --gpu 0 --batch-size 10 --epoch 400 --steps 100 --dataset wbc4_1024x1024 --cls 4 --valid False
+# JOB: python3 train_wbc.py --docker --snapshot imagenet --phi 1 --gpu 1 --batch-size 10 --epoch 400 --steps 100 --dataset wbc4_1024x1024 --cls 5 --valid False
+# JOB: python3 train_wbc.py --docker --snapshot imagenet --phi 1 --gpu 2 --batch-size 10 --epoch 400 --steps 100 --dataset wbc4_1024x1024 --cls 4 --valid True
+# JOB: python3 train_wbc.py --docker --snapshot imagenet --phi 1 --gpu 3 --batch-size 10 --epoch 400 --steps 100 --dataset wbc4_1024x1024 --cls 5 --valid True
+
+# Mar 17, 2021
+JOB: python3 train_wbc_cv.py --docker --snapshot imagenet --dataset wbc2_1024x1024 --cls 4 --phi 0 --gpu 0 --batch-size 16 --steps 100 --epoch 200 --valid False --cross 1
+JOB: python3 train_wbc_cv.py --docker --snapshot imagenet --dataset wbc2_1024x1024 --cls 4 --phi 0 --gpu 1 --batch-size 16 --steps 100 --epoch 200 --valid False --cross 2
+JOB: python3 train_wbc_cv.py --docker --snapshot imagenet --dataset wbc2_1024x1024 --cls 4 --phi 0 --gpu 2 --batch-size 16 --steps 100 --epoch 200 --valid False --cross 3
+JOB: python3 train_wbc_cv.py --docker --snapshot imagenet --dataset wbc2_1024x1024 --cls 4 --phi 0 --gpu 3 --batch-size 16 --steps 100 --epoch 200 --valid False --cross 4
