@@ -318,6 +318,7 @@ def evaluate_wbc(
                     false_positives = np.append(false_positives, 1)
                     true_positives = np.append(true_positives, 0)
                     continue
+                    
                 overlaps = compute_overlap(np.expand_dims(d, axis=0), annotations)
                 assigned_annotation = np.argmax(overlaps, axis=1)
                 max_overlap = overlaps[0, assigned_annotation]
@@ -363,6 +364,8 @@ def evaluate_wbc(
         
         if model_dir:
             # print(recall.shape, precision.shape)
+            np.save(model_dir + '/detections.npy', all_detections)
+            np.save(model_dir + '/gts.npy', all_annotations)
             np.savetxt(model_dir + '/{}.txt'.format(label), np.stack([recall, precision], axis = -1))
     print('num_fp={}, num_tp={}'.format(num_fp, num_tp))
     

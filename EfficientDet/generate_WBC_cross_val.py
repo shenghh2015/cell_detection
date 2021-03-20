@@ -23,8 +23,10 @@ dataset_dir = '/data/datasets' if docker else './datasets'
 cls_label_map = {'neutrophils': 0, 'eosinophils': 1, 'lymphocytes': 2, 'monocytes': 3}
 cls_label_map2 = {'neutrophils': 0, 'bands': 1, 'eosinophils': 2, 'lymphocytes': 3, 'monocytes': 4}
 
-def load_test_boxes(dataset, cls):
-    data_csv_file = dataset_dir + '/' + dataset + '/docker/test_{}c.csv'.format(cls)
+## cross validation 
+def load_test_boxes(dataset, cross, cls):
+		#     data_csv_file = dataset_dir + '/' + dataset + '/docker/test_{}c.csv'.format(cls)
+    data_csv_file = dataset_dir + '/' + dataset + '/cv_sets/cv{}_test_{}c.csv'.format(cross, cls)
     gt_boxes = {}
     with open(data_csv_file, 'r+') as f:
         lines = f.readlines()
@@ -41,9 +43,9 @@ def load_test_boxes(dataset, cls):
                 gt_boxes[img_path][1].append(label)
     return gt_boxes
 
-def evaluate_ap(model, phi, dataset, model_path = './', cls = 4, save = False):
+def evaluate_ap(model, phi, dataset, model_path = './', cross = 1, cls = 4, save = False):
 		# dataset = 'wbc_1024x1024'
-		val_annotations_path = dataset_dir + '/' + dataset + '/docker/test_{}c.csv'.format(cls)
+		val_annotations_path = dataset_dir + '/' + dataset + '/cv_sets/cv{}_test_{}c.csv'.format(cross, cls)
 		classes_path = dataset_dir + '/' + dataset + '/docker/class_{}c.csv'.format(cls)
 		validation_generator = CSVGenerator(
 		val_annotations_path,
@@ -76,7 +78,7 @@ def evaluate_ap(model, phi, dataset, model_path = './', cls = 4, save = False):
 		# save the summary if save is True
 		if save:
 			model_folder = os.path.join(model_root_dir, dataset, os.path.basename(os.path.dirname(model_path)))
-			with open(model_folder + '/best_model_summary', 'w+') as f:
+			with open(model_folder + '/best_test_summary', 'w+') as f:
 					f.write('Model path: {}\n'.format(model_path))
 					for line in write_lines:
 					    f.write(line)
@@ -86,8 +88,8 @@ def evaluate_ap(model, phi, dataset, model_path = './', cls = 4, save = False):
 # dataset = 'wbc_1024x1024'
 # gt_boxes = load_test_boxes(dataset)
 
-model_root_dir = '/data/models/'
-    
+model_root_dir = '/data/cv_models/'
+
 def fetch_top_weights(model_name, top = 10):
     #model_name = 'phi-0-set-wbc_1024x1024-wfpn-False-ep-200-stp-100-bz-8'
     # fetch top epochs
@@ -115,26 +117,56 @@ def fetch_top_weights(model_name, top = 10):
     weight_files = []
     for epoch in top_epochs:
         weight_files += glob.glob(model_folder + '/csv_{}_*'.format(epoch))
+    print(weight_files)
     return weight_files
+
+cv_models = {'wbc_1024x1024':['phi-0-set-wbc_1024x1024-wfpn-False-ep-200-stp-100-bz-8-snap-imagenet-cls-4-valid-False-cross-1',
+'phi-0-set-wbc_1024x1024-wfpn-False-ep-200-stp-100-bz-8-snap-imagenet-cls-4-valid-False-cross-2',
+'phi-0-set-wbc_1024x1024-wfpn-False-ep-200-stp-100-bz-8-snap-imagenet-cls-4-valid-False-cross-3',
+'phi-0-set-wbc_1024x1024-wfpn-False-ep-200-stp-100-bz-8-snap-imagenet-cls-4-valid-False-cross-4',
+'phi-0-set-wbc_1024x1024-wfpn-False-ep-200-stp-100-bz-8-snap-imagenet-cls-4-valid-False-cross-5',
+'phi-0-set-wbc_1024x1024-wfpn-False-ep-200-stp-100-bz-8-snap-imagenet-cls-5-valid-False-cross-1',
+'phi-0-set-wbc_1024x1024-wfpn-False-ep-200-stp-100-bz-8-snap-imagenet-cls-5-valid-False-cross-2',
+'phi-0-set-wbc_1024x1024-wfpn-False-ep-200-stp-100-bz-8-snap-imagenet-cls-5-valid-False-cross-3',
+'phi-0-set-wbc_1024x1024-wfpn-False-ep-200-stp-100-bz-8-snap-imagenet-cls-5-valid-False-cross-4',
+'phi-0-set-wbc_1024x1024-wfpn-False-ep-200-stp-100-bz-8-snap-imagenet-cls-5-valid-False-cross-5'],
+# wbc2_1024x1024
+'wbc2_1024x1024':['phi-0-set-wbc2_1024x1024-wfpn-False-ep-200-stp-100-bz-8-snap-imagenet-cls-4-valid-False-cross-1',
+'phi-0-set-wbc2_1024x1024-wfpn-False-ep-200-stp-100-bz-8-snap-imagenet-cls-4-valid-False-cross-2',
+'phi-0-set-wbc2_1024x1024-wfpn-False-ep-200-stp-100-bz-8-snap-imagenet-cls-4-valid-False-cross-3',
+'phi-0-set-wbc2_1024x1024-wfpn-False-ep-200-stp-100-bz-8-snap-imagenet-cls-4-valid-False-cross-4',
+'phi-0-set-wbc2_1024x1024-wfpn-False-ep-200-stp-100-bz-8-snap-imagenet-cls-4-valid-False-cross-5',
+'phi-0-set-wbc2_1024x1024-wfpn-False-ep-200-stp-100-bz-8-snap-imagenet-cls-5-valid-False-cross-1',
+'phi-0-set-wbc2_1024x1024-wfpn-False-ep-200-stp-100-bz-8-snap-imagenet-cls-5-valid-False-cross-2',
+'phi-0-set-wbc2_1024x1024-wfpn-False-ep-200-stp-100-bz-8-snap-imagenet-cls-5-valid-False-cross-3',
+'phi-0-set-wbc2_1024x1024-wfpn-False-ep-200-stp-100-bz-8-snap-imagenet-cls-5-valid-False-cross-4',
+'phi-0-set-wbc2_1024x1024-wfpn-False-ep-200-stp-100-bz-8-snap-imagenet-cls-5-valid-False-cross-5'],
+ # wbc4_1024x1024
+'wbc4_1024x1024':['phi-0-set-wbc4_1024x1024-wfpn-False-ep-200-stp-100-bz-8-snap-imagenet-cls-4-valid-False-cross-1',
+'phi-0-set-wbc4_1024x1024-wfpn-False-ep-200-stp-100-bz-8-snap-imagenet-cls-4-valid-False-cross-2',
+'phi-0-set-wbc4_1024x1024-wfpn-False-ep-200-stp-100-bz-8-snap-imagenet-cls-4-valid-False-cross-3',
+'phi-0-set-wbc4_1024x1024-wfpn-False-ep-200-stp-100-bz-8-snap-imagenet-cls-4-valid-False-cross-4',
+'phi-0-set-wbc4_1024x1024-wfpn-False-ep-200-stp-100-bz-8-snap-imagenet-cls-4-valid-False-cross-5',
+'phi-0-set-wbc4_1024x1024-wfpn-False-ep-200-stp-100-bz-8-snap-imagenet-cls-5-valid-False-cross-1',
+'phi-0-set-wbc4_1024x1024-wfpn-False-ep-200-stp-100-bz-8-snap-imagenet-cls-5-valid-False-cross-2',
+'phi-0-set-wbc4_1024x1024-wfpn-False-ep-200-stp-100-bz-8-snap-imagenet-cls-5-valid-False-cross-3',
+'phi-0-set-wbc4_1024x1024-wfpn-False-ep-200-stp-100-bz-8-snap-imagenet-cls-5-valid-False-cross-4',
+'phi-0-set-wbc4_1024x1024-wfpn-False-ep-200-stp-100-bz-8-snap-imagenet-cls-5-valid-False-cross-5']}
 
 def main():
 		os.environ['CUDA_VISIBLE_DEVICES'] = '2'
-
-		cls = 4
-		model_name_list = ['phi-1-set-wbc_1024x1024-wfpn-True-ep-400-stp-100-bz-10-snap-imagenet-cls-4-valid-False',
-											 'phi-0-set-wbc2_1024x1024-wfpn-False-ep-400-stp-100-bz-8-snap-imagenet-cls-4-valid-False',
-											 'phi-0-set-wbc4_1024x1024-wfpn-False-ep-400-stp-100-bz-8-snap-imagenet-cls-4-valid-False'
-											]
-# 		cls = 5
-# 		model_name_list = ['phi-1-set-wbc_1024x1024-wfpn-True-ep-400-stp-100-bz-10-snap-imagenet-cls-5-valid-False',
-# 											 'phi-0-set-wbc2_1024x1024-wfpn-False-ep-400-stp-100-bz-8-snap-imagenet-cls-5-valid-False',
-# 											 'phi-1-set-wbc4_1024x1024-wfpn-False-ep-400-stp-100-bz-10-snap-imagenet-cls-5-valid-False']
-		for model_name in model_name_list:
+		dataset = 'wbc4_1024x1024'
+		model_names = cv_models[dataset]; print(len(model_names))
+		# model_names = [model_name for model_name in cv_models[dataset] if 'cls-5' in model_name]
+		for model_name in model_names:
 				# parse the model name to get parameters
+				print(model_name)
 				splits = model_name.split('-')
 				dataset = 'wbc_1024x1024'
 				phi = 0
 				wfpn = False
+				cls = 4
+				cross = 1
 				for v, sp in enumerate(splits):
 						if sp == 'set':
 								dataset = splits[v + 1]
@@ -142,8 +174,12 @@ def main():
 								phi = int(splits[v+1])
 						elif sp == 'wfpn':
 								wfpn = splits[v+1].lower() == 'true'
+						elif sp == 'cls':
+								cls = int(splits[v+1])
+						elif sp == 'cross':
+								cross = int(splits[v+1])
 				mAP_list = []
-				top = 1
+				top = 5
 				weight_files = fetch_top_weights(model_name, top = top)
 				image_sizes = (512, 640, 768, 896, 1024, 1280, 1408)
 				image_size = image_sizes[phi]
@@ -159,14 +195,14 @@ def main():
 																score_threshold=score_threshold)
 				for model_path in weight_files:
 						model.load_weights(model_path, by_name=True)
-						mAP = evaluate_ap(model, phi, dataset, cls = cls)
+						mAP = evaluate_ap(model, phi, dataset, cross = cross, cls = cls)
 						mAP_list.append(mAP)
 				best_index = np.argmax(mAP_list); print('Best mAP: {:.3f}'.format(mAP_list[best_index]))
 				model_path = weight_files[best_index]
 				model_dir = os.path.dirname(model_path)
 				model.load_weights(model_path, by_name=True)
-				evaluate_ap(model, phi, dataset, model_path, cls = cls, save = True)
-				gt_boxes = load_test_boxes(dataset, cls = cls)
+				evaluate_ap(model, phi, dataset, model_path, cross = cross, cls = cls, save = True)
+				gt_boxes = load_test_boxes(dataset, cross = cross, cls = cls)
 				#for image_path in glob.glob('datasets/VOC2007/JPEGImages/*.png'):
 				for image_path in gt_boxes:
 						#print(image_path)
