@@ -7,6 +7,7 @@ import glob
 
 from natsort import natsorted
 import pickle
+from cv_models import cv_models
 
 from generators.csv_ import CSVGenerator
 from eval.common import evaluate, evaluate_wbc
@@ -120,41 +121,10 @@ def fetch_top_weights(model_name, top = 10):
     print(weight_files)
     return weight_files
 
-cv_models = {'wbc_1024x1024':['phi-0-set-wbc_1024x1024-wfpn-False-ep-200-stp-100-bz-8-snap-imagenet-cls-4-valid-False-cross-1',
-'phi-0-set-wbc_1024x1024-wfpn-False-ep-200-stp-100-bz-8-snap-imagenet-cls-4-valid-False-cross-2',
-'phi-0-set-wbc_1024x1024-wfpn-False-ep-200-stp-100-bz-8-snap-imagenet-cls-4-valid-False-cross-3',
-'phi-0-set-wbc_1024x1024-wfpn-False-ep-200-stp-100-bz-8-snap-imagenet-cls-4-valid-False-cross-4',
-'phi-0-set-wbc_1024x1024-wfpn-False-ep-200-stp-100-bz-8-snap-imagenet-cls-4-valid-False-cross-5',
-'phi-0-set-wbc_1024x1024-wfpn-False-ep-200-stp-100-bz-8-snap-imagenet-cls-5-valid-False-cross-1',
-'phi-0-set-wbc_1024x1024-wfpn-False-ep-200-stp-100-bz-8-snap-imagenet-cls-5-valid-False-cross-2',
-'phi-0-set-wbc_1024x1024-wfpn-False-ep-200-stp-100-bz-8-snap-imagenet-cls-5-valid-False-cross-3',
-'phi-0-set-wbc_1024x1024-wfpn-False-ep-200-stp-100-bz-8-snap-imagenet-cls-5-valid-False-cross-4',
-'phi-0-set-wbc_1024x1024-wfpn-False-ep-200-stp-100-bz-8-snap-imagenet-cls-5-valid-False-cross-5'],
-# wbc2_1024x1024
-'wbc2_1024x1024':['phi-0-set-wbc2_1024x1024-wfpn-False-ep-200-stp-100-bz-8-snap-imagenet-cls-4-valid-False-cross-1',
-'phi-0-set-wbc2_1024x1024-wfpn-False-ep-200-stp-100-bz-8-snap-imagenet-cls-4-valid-False-cross-2',
-'phi-0-set-wbc2_1024x1024-wfpn-False-ep-200-stp-100-bz-8-snap-imagenet-cls-4-valid-False-cross-3',
-'phi-0-set-wbc2_1024x1024-wfpn-False-ep-200-stp-100-bz-8-snap-imagenet-cls-4-valid-False-cross-4',
-'phi-0-set-wbc2_1024x1024-wfpn-False-ep-200-stp-100-bz-8-snap-imagenet-cls-4-valid-False-cross-5',
-'phi-0-set-wbc2_1024x1024-wfpn-False-ep-200-stp-100-bz-8-snap-imagenet-cls-5-valid-False-cross-1',
-'phi-0-set-wbc2_1024x1024-wfpn-False-ep-200-stp-100-bz-8-snap-imagenet-cls-5-valid-False-cross-2',
-'phi-0-set-wbc2_1024x1024-wfpn-False-ep-200-stp-100-bz-8-snap-imagenet-cls-5-valid-False-cross-3',
-'phi-0-set-wbc2_1024x1024-wfpn-False-ep-200-stp-100-bz-8-snap-imagenet-cls-5-valid-False-cross-4',
-'phi-0-set-wbc2_1024x1024-wfpn-False-ep-200-stp-100-bz-8-snap-imagenet-cls-5-valid-False-cross-5'],
- # wbc4_1024x1024
-'wbc4_1024x1024':['phi-0-set-wbc4_1024x1024-wfpn-False-ep-200-stp-100-bz-8-snap-imagenet-cls-4-valid-False-cross-1',
-'phi-0-set-wbc4_1024x1024-wfpn-False-ep-200-stp-100-bz-8-snap-imagenet-cls-4-valid-False-cross-2',
-'phi-0-set-wbc4_1024x1024-wfpn-False-ep-200-stp-100-bz-8-snap-imagenet-cls-4-valid-False-cross-3',
-'phi-0-set-wbc4_1024x1024-wfpn-False-ep-200-stp-100-bz-8-snap-imagenet-cls-4-valid-False-cross-4',
-'phi-0-set-wbc4_1024x1024-wfpn-False-ep-200-stp-100-bz-8-snap-imagenet-cls-4-valid-False-cross-5',
-'phi-0-set-wbc4_1024x1024-wfpn-False-ep-200-stp-100-bz-8-snap-imagenet-cls-5-valid-False-cross-1',
-'phi-0-set-wbc4_1024x1024-wfpn-False-ep-200-stp-100-bz-8-snap-imagenet-cls-5-valid-False-cross-2',
-'phi-0-set-wbc4_1024x1024-wfpn-False-ep-200-stp-100-bz-8-snap-imagenet-cls-5-valid-False-cross-3',
-'phi-0-set-wbc4_1024x1024-wfpn-False-ep-200-stp-100-bz-8-snap-imagenet-cls-5-valid-False-cross-4',
-'phi-0-set-wbc4_1024x1024-wfpn-False-ep-200-stp-100-bz-8-snap-imagenet-cls-5-valid-False-cross-5']}
+
 
 def main():
-		os.environ['CUDA_VISIBLE_DEVICES'] = '2'
+		os.environ['CUDA_VISIBLE_DEVICES'] = '0'
 		dataset = 'wbc4_1024x1024'
 		model_names = cv_models[dataset]; print(len(model_names))
 		# model_names = [model_name for model_name in cv_models[dataset] if 'cls-5' in model_name]
