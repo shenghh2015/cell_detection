@@ -470,6 +470,19 @@ def efficientdet(phi, num_classes=20, num_anchors=9, weighted_bifpn=False, freez
     prediction_model = models.Model(inputs=[image_input], outputs=detections, name='efficientdet_p')
     return model, prediction_model
 
+# May 24, 2021
+# Note:
+# regression and classification outputs the map of box coordinates (refer to anchors) and that of probabilities   
+# boxes got the absolute coordinates by taking the anchors and regressions
+# non maximum suppression to get the detected objects, which is implemented in the keras
+# outputs will be the detected objects and probability scores
+# remaining questions: 
+# how to get the status of anchor? done
+# how to generate the labels for model training? done
+# whether to use the data augmentation? How to use the data augmentation? 
+# non maximum suppression?
+# how to get the anchor shape? 
+# what is the map size (resolution of the map), what is the feature resolution?
 
 if __name__ == '__main__':
     x, y = efficientdet(1)
