@@ -259,6 +259,8 @@ def parse_args(args):
     
     
     parser.add_argument('--dataset_type', type = str, default = 'csv')
+    parser.add_argument('--lr', type = float, default = 1e-3)
+    parser.add_argument('--lw', type = float, default = 1.0)
     parser.add_argument('--cls', type = int, default = 4)
     parser.add_argument('--bstrp', type = int, default = 0)  # 0, 1, 2, 3, 4
     parser.add_argument('--valid', type = str2bool, default = True)
@@ -334,8 +336,9 @@ def main(args=None):
     args.annotations_path = train_annot_path
     args.classes_path = class_path
     args.val_annotations_path = valid_annot_path
-    model_name = 'phi-{}-set-{}-wfpn-{}-ep-{}-stp-{}-bz-{}-snap-{}-cls-{}-valid-{}-aug-{}-bstrp-{}'.format(args.phi, args.dataset,\
-    						 args.weighted_bifpn, args.epochs, args.steps, args.batch_size, snapshot, args.cls, args.valid, args.aug, args.bstrp)
+    model_name = 'phi-{}-set-{}-wfpn-{}-ep-{}-stp-{}-bz-{}-snap-{}-cls-{}-valid-{}-aug-{}-bstrp-{}-lr-{}-lw-{}'.format(args.phi, args.dataset,\
+    						 args.weighted_bifpn, args.epochs, args.steps, args.batch_size, snapshot, args.cls, args.valid, args.aug, args.bstrp,\
+    						 args.lr, args.lw)
     model_dir = '/data/models/{}/{}'.format(args.dataset, model_name); print(model_dir)
     args.tensorboard_dir = model_dir + '/logs'
     args.snapshot_path = model_dir
@@ -383,10 +386,12 @@ def main(args=None):
         model = keras.utils.multi_gpu_model(model, gpus=list(map(int, args.gpu.split(','))))
 
     # compile model
-    model.compile(optimizer=Adam(lr=1e-3), loss={
+    lr = args.lr
+    loss_weights = [args.lw,1.]
+    model.compile(optimizer=Adam(lr=lr), loss={
         'regression': smooth_l1_quad() if args.detect_quadrangle else smooth_l1(),
         'classification': focal()
-    }, )
+    }, loss_weights = loss_weights)
 
     # print(model.summary())
 
