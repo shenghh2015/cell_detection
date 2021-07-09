@@ -262,6 +262,7 @@ def parse_args(args):
     parser.add_argument('--lr', type = float, default = 1e-3)
     parser.add_argument('--lw', type = float, default = 1.0)
     parser.add_argument('--cls', type = int, default = 4)
+    parser.add_argument('--nb', type = int, default = 400)
     parser.add_argument('--bstrp', type = int, default = 0)  # 0, 1, 2, 3, 4
     parser.add_argument('--valid', type = str2bool, default = True)
     parser.add_argument('--aug', type = str2bool, default = False)
@@ -321,8 +322,12 @@ def main(args=None):
         snapshot = splits[-2]
     dataset_dir = '/data/datasets/{}'.format(args.dataset) if args.docker else './datasets/{}'.format(args.dataset)
     if args.valid:
-        train_annot_path = dataset_dir + '/docker/train_{}c.csv'.format(args.cls) if args.docker else dataset_dir + '/train_4c.csv'
-        valid_annot_path = dataset_dir + '/docker/valid_{}c.csv'.format(args.cls) if args.docker else dataset_dir + '/valid_4c.csv'
+        if args.nb == 400:
+            train_annot_path = dataset_dir + '/docker/bootstrap_labels/train_{}c_b{}.csv'.format(args.cls, args.bstrp) if args.docker else dataset_dir + '/train_4c.csv'
+            valid_annot_path = dataset_dir + '/docker/bootstrap_labels/val_{}c_b{}.csv'.format(args.cls, args.bstrp) if args.docker else dataset_dir + '/valid_4c.csv'
+        else:
+            train_annot_path = dataset_dir + '/docker/bootstrap_labels_{}/train_{}c_b{}.csv'.format(args.nb, args.cls, args.bstrp) if args.docker else dataset_dir + '/train_4c.csv'
+            valid_annot_path = dataset_dir + '/docker/bootstrap_labels_{}/val_{}c_b{}.csv'.format(args.nb, args.cls, args.bstrp) if args.docker else dataset_dir + '/valid_4c.csv'
     else:
         if args.aug:
             train_annot_path = dataset_dir + '/docker/aug_train_{}c.csv'.format(args.cls) if args.docker else dataset_dir + '/aug_train_4c.csv'
@@ -336,9 +341,9 @@ def main(args=None):
     args.annotations_path = train_annot_path
     args.classes_path = class_path
     args.val_annotations_path = valid_annot_path
-    model_name = 'phi-{}-set-{}-wfpn-{}-ep-{}-stp-{}-bz-{}-snap-{}-cls-{}-valid-{}-aug-{}-bstrp-{}-lr-{}-lw-{}'.format(args.phi, args.dataset,\
+    model_name = 'phi-{}-set-{}-wfpn-{}-ep-{}-stp-{}-bz-{}-snap-{}-cls-{}-valid-{}-aug-{}-bstrp-{}-lr-{}-lw-{}-nb-{}'.format(args.phi, args.dataset,\
     						 args.weighted_bifpn, args.epochs, args.steps, args.batch_size, snapshot, args.cls, args.valid, args.aug, args.bstrp,\
-    						 args.lr, args.lw)
+    						 args.lr, args.lw, args.nb)
     model_dir = '/data/models/{}/{}'.format(args.dataset, model_name); print(model_dir)
     args.tensorboard_dir = model_dir + '/logs'
     args.snapshot_path = model_dir
@@ -387,7 +392,7 @@ def main(args=None):
 
     # compile model
     lr = args.lr
-    loss_weights = [args.lw,1.]
+    loss_weights = [args.lw, 1.]
     model.compile(optimizer=Adam(lr=lr), loss={
         'regression': smooth_l1_quad() if args.detect_quadrangle else smooth_l1(),
         'classification': focal()
