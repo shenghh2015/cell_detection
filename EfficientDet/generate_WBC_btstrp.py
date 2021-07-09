@@ -131,8 +131,8 @@ def fetch_top_weights(model_name, top = 10):
 
 
 def main():
-		os.environ['CUDA_VISIBLE_DEVICES'] = '2'
-		dataset = 'wbc5_1024x1024'
+		os.environ['CUDA_VISIBLE_DEVICES'] = '0'
+		dataset = 'wbc_1024x1024'
 		model_names = cv_models[dataset]; print(len(model_names))
 		# model_names = [model_name for model_name in cv_models[dataset] if 'cls-5' in model_name]
 		for model_name in model_names:
@@ -159,7 +159,7 @@ def main():
 						elif sp == 'bstrp':
 								bstrp = int(splits[v+1])
 				mAP_list = []
-				top = 1
+				top = 3
 				weight_files = fetch_top_weights(model_name, top = top)
 				image_sizes = (512, 640, 768, 896, 1024, 1280, 1408)
 				image_size = image_sizes[phi]
