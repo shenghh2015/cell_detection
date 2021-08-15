@@ -1,4 +1,4 @@
-export LSF_DOCKER_VOLUMES='/scratch1/fs1/anastasio/Data_FDA_Breast/wb_cells:/data'
+export LSF_DOCKER_VOLUMES='/scratch1/fs1/anastasio/shenghuahe/wb_cells:/data'
 export LSF_DOCKER_NETWORK=host
 export LSF_DOCKER_IPC=host 
 export LSF_DOCKER_SHM_SIZE=40G
