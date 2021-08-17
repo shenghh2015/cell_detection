@@ -169,3 +169,8 @@ JOB: python3 train_wbc_bootstrap.py --docker --snapshot imagenet --dataset wbc5_
 JOB: python3 train_wbc_bootstrap.py --docker --snapshot imagenet --dataset wbc5_1024x1024 --valid False --phi 0 --gpu 1 --batch-size 10 --steps 100 --epoch 200 --aug False --bstrp 1 --lr 5e-5 --lw 0.5 --nb 400
 JOB: python3 train_wbc_bootstrap.py --docker --snapshot imagenet --dataset wbc5_1024x1024 --valid False --phi 0 --gpu 2 --batch-size 10 --steps 100 --epoch 200 --aug False --bstrp 2 --lr 5e-5 --lw 0.5 --nb 400
 JOB: python3 train_wbc_bootstrap.py --docker --snapshot imagenet --dataset wbc5_1024x1024 --valid False --phi 0 --gpu 3 --batch-size 10 --steps 100 --epoch 200 --aug False --bstrp 3 --lr 5e-5 --lw 0.5 --nb 400
+
+# JOB: python3 train_wbc_bootstrap.py --docker --snapshot imagenet --dataset wbc5_1024x1024 --valid False --phi 0 --gpu 0 --batch-size 16 --steps 100 --epoch 200 --aug False --bstrp 4 --lr 5e-5 --lw 0.5 --nb 400
+# JOB: python3 train_wbc_bootstrap.py --docker --snapshot imagenet --dataset wbc_1024x1024 --valid False --phi 0 --gpu 1 --batch-size 16 --steps 100 --epoch 200 --aug False --bstrp 0 --lr 5e-5 --lw 0.5 --nb 400
+# JOB: python3 train_wbc_bootstrap.py --docker --snapshot imagenet --dataset wbc_1024x1024 --valid False --phi 0 --gpu 2 --batch-size 16 --steps 100 --epoch 200 --aug False --bstrp 1 --lr 5e-5 --lw 0.5 --nb 400
+# JOB: python3 train_wbc_bootstrap.py --docker --snapshot imagenet --dataset wbc_1024x1024 --valid False --phi 0 --gpu 3 --batch-size 16 --steps 100 --epoch 200 --aug False --bstrp 2 --lr 5e-5 --lw 0.5 --nb 400
