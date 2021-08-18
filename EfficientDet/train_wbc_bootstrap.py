@@ -118,16 +118,16 @@ def create_callbacks(training_model, prediction_model, validation_generator, arg
         )
         callbacks.append(checkpoint)
 
-    # callbacks.append(keras.callbacks.ReduceLROnPlateau(
-    #     monitor='loss',
-    #     factor=0.1,
-    #     patience=2,
-    #     verbose=1,
-    #     mode='auto',
-    #     min_delta=0.0001,
-    #     cooldown=0,
-    #     min_lr=0
-    # ))
+    callbacks.append(keras.callbacks.ReduceLROnPlateau(
+        monitor='loss',
+        factor=0.9,
+        patience=5,
+        verbose=1,
+        mode='auto',
+        min_delta=0.0001,
+        cooldown=0,
+        min_lr=0.01
+    ))
 
     return callbacks
 
