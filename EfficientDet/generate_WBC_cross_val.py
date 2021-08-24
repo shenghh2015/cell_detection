@@ -126,7 +126,7 @@ def fetch_top_weights(model_name, top = 10):
 
 def main():
 		os.environ['CUDA_VISIBLE_DEVICES'] = '2'
-		dataset = 'wbc4_1024x1024'
+		dataset = 'wbc2_1024x1024'
 		model_names = cv_models[dataset]; print(len(model_names))
 		# model_names = [model_name for model_name in cv_models[dataset] if 'cls-5' in model_name]
 		for model_name in model_names:

@@ -119,14 +119,14 @@ def create_callbacks(training_model, prediction_model, validation_generator, arg
         callbacks.append(checkpoint)
 
     callbacks.append(keras.callbacks.ReduceLROnPlateau(
-        monitor='loss',
-        factor=0.9,
+        monitor='val_loss',
+        factor=args.rd,
         patience=5,
         verbose=1,
         mode='auto',
         min_delta=0.0001,
         cooldown=0,
-        min_lr=0.01
+        min_lr=0.000001
     ))
 
     return callbacks
@@ -260,6 +260,7 @@ def parse_args(args):
     
     parser.add_argument('--dataset_type', type = str, default = 'csv')
     parser.add_argument('--lr', type = float, default = 1e-3)
+    parser.add_argument('--rd', type = float, default = 0.9)
     parser.add_argument('--lw', type = float, default = 1.0)
     parser.add_argument('--cls', type = int, default = 4)
     parser.add_argument('--nb', type = int, default = 400)
@@ -341,9 +342,9 @@ def main(args=None):
     args.annotations_path = train_annot_path
     args.classes_path = class_path
     args.val_annotations_path = valid_annot_path
-    model_name = 'phi-{}-set-{}-wfpn-{}-ep-{}-stp-{}-bz-{}-snap-{}-cls-{}-valid-{}-aug-{}-bstrp-{}-lr-{}-lw-{}-nb-{}'.format(args.phi, args.dataset,\
+    model_name = 'phi-{}-set-{}-wfpn-{}-ep-{}-stp-{}-bz-{}-snap-{}-cls-{}-valid-{}-aug-{}-bstrp-{}-lr-{}-lw-{}-nb-{}-rd-{}'.format(args.phi, args.dataset,\
     						 args.weighted_bifpn, args.epochs, args.steps, args.batch_size, snapshot, args.cls, args.valid, args.aug, args.bstrp,\
-    						 args.lr, args.lw, args.nb)
+    						 args.lr, args.lw, args.nb, args.rd)
     model_dir = '/data/models/{}/{}'.format(args.dataset, model_name); print(model_dir)
     args.tensorboard_dir = model_dir + '/logs'
     args.snapshot_path = model_dir

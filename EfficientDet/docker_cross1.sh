@@ -18,5 +18,8 @@
 # python3 train_wbc_cv.py --docker --snapshot imagenet --dataset wbc_1024x1024 --cls 4 --phi 1 --gpu 0 --batch-size 4 --steps 100 --epoch 200 --valid False --cross 5
 # python3 train_wbc_cv.py --docker --snapshot imagenet --dataset wbc4_1024x1024 --cls 4 --phi 1 --gpu 0 --batch-size 4 --steps 100 --epoch 200 --valid False --cross 4
 
-python3 train_wbc_cv.py --docker --snapshot imagenet --dataset wbc_1024x1024 --cls 4 --phi 0 --gpu 2 --batch-size 8 --steps 100 --epoch 400 --valid False --cross 1 --lr 1e-4 --lw 0.5
-python3 train_wbc_cv.py --docker --snapshot imagenet --dataset wbc_1024x1024 --cls 4 --phi 0 --gpu 0 --batch-size 8 --steps 100 --epoch 400 --valid False --cross 1 --lr 5e-5 --lw 0.5
+# python3 train_wbc_cv.py --docker --snapshot imagenet --dataset wbc_1024x1024 --cls 4 --phi 0 --gpu 2 --batch-size 8 --steps 100 --epoch 400 --valid False --cross 1 --lr 1e-4 --lw 0.5
+# python3 train_wbc_cv.py --docker --snapshot imagenet --dataset wbc_1024x1024 --cls 4 --phi 0 --gpu 0 --batch-size 8 --steps 100 --epoch 400 --valid False --cross 1 --lr 5e-5 --lw 0.5
+
+python3 train_wbc_cv.py --docker --snapshot imagenet --dataset wbc2_1024x1024 --cls 4 --phi 0 --gpu 2 --batch-size 8 --steps 100 --epoch 400 --valid True --cross 1 --lr 1e-4 --lw 0.5
+python3 train_wbc_cv.py --docker --snapshot imagenet --dataset wbc2_1024x1024 --cls 4 --phi 0 --gpu 0 --batch-size 8 --steps 100 --epoch 400 --valid True --cross 1 --lr 5e-5 --lw 0.5
