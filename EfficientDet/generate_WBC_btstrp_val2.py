@@ -30,7 +30,7 @@ def load_test_boxes(dataset, cross, cls):
 		#     data_csv_file = dataset_dir + '/' + dataset + '/docker/test_{}c.csv'.format(cls)
     # data_csv_file = dataset_dir + '/' + dataset + '/cv_sets/cv{}_test_{}c.csv'.format(cross, cls)
     #data_csv_file = dataset_dir + '/{}/docker/bootstrap_labels/val_{}c_b{}.csv'.format(dataset, cls, cross)
-    data_csv_file = dataset_dir + '/{}/docker/bootstrap_labels/test_{}c.csv'.format(dataset, cls)
+    data_csv_file = dataset_dir + '/{}/docker/bootstrap_labels/test_{}c_v2.csv'.format(dataset, cls)
     gt_boxes = {}
     with open(data_csv_file, 'r+') as f:
         lines = f.readlines()
@@ -51,7 +51,7 @@ def evaluate_ap(model, phi, dataset, model_path = './', cross = 1, cls = 4, save
 		# dataset = 'wbc_1024x1024'
 		# val_annotations_path = dataset_dir + '/' + dataset + '/cv_sets/cv{}_test_{}c.csv'.format(cross, cls)
 		# val_annotations_path = dataset_dir + '/{}/docker/bootstrap_labels/val_{}c_b{}.csv'.format(dataset, cls, cross)
-		val_annotations_path = dataset_dir + '/{}/docker/bootstrap_labels/test_{}c.csv'.format(dataset, cls)
+		val_annotations_path = dataset_dir + '/{}/docker/bootstrap_labels/test_{}c_v2.csv'.format(dataset, cls)
 		classes_path = dataset_dir + '/' + dataset + '/docker/class_{}c.csv'.format(cls)
 		validation_generator = CSVGenerator(
 		val_annotations_path,
@@ -128,33 +128,9 @@ def fetch_top_weights(model_name, top = 10):
     print(weight_files)
     return weight_files
 
-def fetch_top_weights_v2(model_name, top = 10):
-    #model_name = 'phi-0-set-wbc_1024x1024-wfpn-False-ep-200-stp-100-bz-8'
-    # fetch top epochs
-    splits = model_name.split('-')
-    dataset = 'wbc2_1024x1024'
-    for v, sp in enumerate(splits):
-        if sp == 'set':
-            dataset = splits[v + 1]
-    model_folder = os.path.join(model_root_dir, dataset, model_name)
-    val_loss = [float(fn.split('.')[0].split('_')[-1]) for fn in os.listdir(model_folder) if 'csv' in fn]
-    loss_index_map = {}
-    for ind, loss in enumerate(val_loss):
-    		loss_index_map[loss] = ind
-    val_loss.sort()
-    top_epochs = list(set([loss_index_map[loss] + 1 for loss in val_loss[:top]]))
-    # fetch top weights
-    weight_files = []
-    for epoch in top_epochs:
-        weight_files += glob.glob(model_folder + '/csv_{}_*'.format(epoch))
-    print(weight_files)
-    return weight_files
-
-
 def main():
 		os.environ['CUDA_VISIBLE_DEVICES'] = '2'
-		dataset = 'wbc_1024x1024'
-		loss_or_mAP = False
+		dataset = 'wbc5_1024x1024'
 		model_names = non_cv_models[dataset]; print(len(model_names))
 		# model_names = [model_name for model_name in cv_models[dataset] if 'cls-5' in model_name]
 		for model_name in model_names:
@@ -182,7 +158,7 @@ def main():
 								bstrp = int(splits[v+1])
 				mAP_list = []
 				top = 3
-				weight_files = fetch_top_weights_v2(model_name, top = top) if loss_or_mAP else fetch_top_weights(model_name, top = top)
+				weight_files = fetch_top_weights(model_name, top = top)
 				image_sizes = (512, 640, 768, 896, 1024, 1280, 1408)
 				image_size = image_sizes[phi]
 				classes1 = {0:'neutrophils', 1:'eosinophils', 2:'lymphocytes', 3:'monocytes'}

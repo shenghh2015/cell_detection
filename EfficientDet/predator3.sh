@@ -30,6 +30,23 @@
 # python3 train_wbc_bootstrap.py --docker --snapshot imagenet --dataset wbc5_1024x1024 --valid False --phi 0 --gpu 2 --batch-size 8 --steps 100 --epoch 200 --aug False --bstrp 1 --lr 5e-5 --lw 0.5 --nb 400 --rd 0.9
 # python3 train_wbc_bootstrap.py --docker --snapshot imagenet --dataset wbc5_1024x1024 --valid False --phi 0 --gpu 2 --batch-size 8 --steps 100 --epoch 200 --aug False --bstrp 2 --lr 5e-5 --lw 0.5 --nb 400 --rd 0.9
 # python3 train_wbc_bootstrap.py --docker --snapshot imagenet --dataset wbc5_1024x1024 --valid False --phi 0 --gpu 2 --batch-size 8 --steps 100 --epoch 200 --aug False --bstrp 4 --lr 5e-5 --lw 0.5 --nb 400 --rd 0.9
-python3 train_wbc_bootstrap.py --docker --snapshot imagenet --dataset wbc5_1024x1024 --valid False --phi 0 --gpu 2 --batch-size 8 --steps 100 --epoch 200 --aug False --bstrp 3 --lr 5e-5 --lw 0.5 --nb 400 --rd 0.9
+# python3 train_wbc_bootstrap.py --docker --snapshot imagenet --dataset wbc5_1024x1024 --valid False --phi 0 --gpu 2 --batch-size 8 --steps 100 --epoch 200 --aug False --bstrp 3 --lr 5e-5 --lw 0.5 --nb 400 --rd 0.9
+# python3 train_wbc_bootstrap.py --docker --snapshot imagenet --dataset wbc5_1024x1024 --valid True --phi 0 --gpu 2 --batch-size 8 --steps 100 --epoch 200 --aug False --bstrp 0 --lr 5e-5 --lw 0.5 --nb 400 --rd 0.9
+# python3 train_wbc_bootstrap.py --docker --snapshot imagenet --dataset wbc5_1024x1024 --valid True --phi 0 --gpu 2 --batch-size 8 --steps 100 --epoch 200 --aug False --bstrp 1 --lr 5e-5 --lw 0.5 --nb 400 --rd 0.9
+
+# Sep 6, 2021
+# python3 train_wbc_bootstrap.py --docker --snapshot imagenet --dataset wbc5_1024x1024 --valid True --phi 0 --gpu 2 --batch-size 8 --steps 100 --epoch 200 --aug True --bstrp 0 --lr 5e-5 --lw 0.5 --nb 400 --rd 0.8
+# python3 train_wbc_bootstrap.py --docker --snapshot imagenet --dataset wbc5_1024x1024 --valid True --phi 0 --gpu 2 --batch-size 8 --steps 100 --epoch 200 --aug True --bstrp 1 --lr 5e-5 --lw 0.5 --nb 400 --rd 0.8
+# python3 train_wbc_bootstrap.py --docker --snapshot imagenet --dataset wbc5_1024x1024 --valid True --phi 0 --gpu 2 --batch-size 8 --steps 100 --epoch 200 --aug True --bstrp 2 --lr 5e-5 --lw 0.5 --nb 400 --rd 0.8
+# python3 train_wbc_bootstrap.py --docker --snapshot imagenet --dataset wbc5_1024x1024 --valid True --phi 0 --gpu 2 --batch-size 8 --steps 100 --epoch 200 --aug True --bstrp 3 --lr 5e-5 --lw 0.5 --nb 400 --rd 0.8
+# python3 train_wbc_bootstrap.py --docker --snapshot imagenet --dataset wbc5_1024x1024 --valid True --phi 0 --gpu 2 --batch-size 8 --steps 100 --epoch 200 --aug True --bstrp 4 --lr 5e-5 --lw 0.5 --nb 400 --rd 0.8
+
+# python3 train_wbc_bootstrap.py --docker --snapshot imagenet --dataset wbc5_1024x1024 --valid True --phi 0 --gpu 0 --batch-size 8 --steps 100 --epoch 200 --aug False --bstrp 0 --lr 5e-5 --lw 0.5 --nb 400 --rd 0.8
+# python3 train_wbc_bootstrap.py --docker --snapshot imagenet --dataset wbc5_1024x1024 --valid True --phi 0 --gpu 0 --batch-size 8 --steps 100 --epoch 200 --aug False --bstrp 1 --lr 5e-5 --lw 0.5 --nb 400 --rd 0.8
+
+# Nov 03, 2021
 python3 train_wbc_bootstrap.py --docker --snapshot imagenet --dataset wbc5_1024x1024 --valid True --phi 0 --gpu 2 --batch-size 8 --steps 100 --epoch 200 --aug False --bstrp 0 --lr 5e-5 --lw 0.5 --nb 400 --rd 0.9
 python3 train_wbc_bootstrap.py --docker --snapshot imagenet --dataset wbc5_1024x1024 --valid True --phi 0 --gpu 2 --batch-size 8 --steps 100 --epoch 200 --aug False --bstrp 1 --lr 5e-5 --lw 0.5 --nb 400 --rd 0.9
+python3 train_wbc_bootstrap.py --docker --snapshot imagenet --dataset wbc5_1024x1024 --valid True --phi 0 --gpu 2 --batch-size 8 --steps 100 --epoch 200 --aug False --bstrp 2 --lr 5e-5 --lw 0.5 --nb 400 --rd 0.9
+python3 train_wbc_bootstrap.py --docker --snapshot imagenet --dataset wbc5_1024x1024 --valid True --phi 0 --gpu 2 --batch-size 8 --steps 100 --epoch 200 --aug False --bstrp 3 --lr 5e-5 --lw 0.5 --nb 400 --rd 0.9
+python3 train_wbc_bootstrap.py --docker --snapshot imagenet --dataset wbc5_1024x1024 --valid True --phi 0 --gpu 2 --batch-size 8 --steps 100 --epoch 200 --aug False --bstrp 4 --lr 5e-5 --lw 0.5 --nb 400 --rd 0.9

@@ -180,25 +180,68 @@ cv_models = {
 # ]
 # }
 
-# Aug 23, 2021
+# Aug 23, 2021 - Sep 06, 2021
 non_cv_models = {
 'wbc_1024x1024':[
 'phi-0-set-wbc_1024x1024-wfpn-False-ep-200-stp-100-bz-8-snap-imagenet-cls-4-valid-True-aug-False-bstrp-0-lr-5e-05-lw-0.5-nb-400-rd-0.9',
 'phi-0-set-wbc_1024x1024-wfpn-False-ep-200-stp-100-bz-8-snap-imagenet-cls-4-valid-True-aug-False-bstrp-1-lr-5e-05-lw-0.5-nb-400-rd-0.9',
+'phi-0-set-wbc_1024x1024-wfpn-False-ep-200-stp-100-bz-8-snap-imagenet-cls-4-valid-True-aug-False-bstrp-2-lr-5e-05-lw-0.5-nb-400-rd-0.9',
+'phi-0-set-wbc_1024x1024-wfpn-False-ep-200-stp-100-bz-8-snap-imagenet-cls-4-valid-True-aug-False-bstrp-3-lr-5e-05-lw-0.5-nb-400-rd-0.9',
+'phi-0-set-wbc_1024x1024-wfpn-False-ep-200-stp-100-bz-8-snap-imagenet-cls-4-valid-True-aug-False-bstrp-4-lr-5e-05-lw-0.5-nb-400-rd-0.9',
 ],
 # wbc2_1024x1024
 'wbc2_1024x1024':[
 'phi-0-set-wbc2_1024x1024-wfpn-False-ep-200-stp-100-bz-8-snap-imagenet-cls-4-valid-True-aug-False-bstrp-0-lr-5e-05-lw-0.5-nb-400-rd-0.9',
 'phi-0-set-wbc2_1024x1024-wfpn-False-ep-200-stp-100-bz-8-snap-imagenet-cls-4-valid-True-aug-False-bstrp-1-lr-5e-05-lw-0.5-nb-400-rd-0.9',
+'phi-0-set-wbc2_1024x1024-wfpn-False-ep-200-stp-100-bz-8-snap-imagenet-cls-4-valid-True-aug-False-bstrp-2-lr-5e-05-lw-0.5-nb-400-rd-0.9',
+'phi-0-set-wbc2_1024x1024-wfpn-False-ep-200-stp-100-bz-8-snap-imagenet-cls-4-valid-True-aug-False-bstrp-3-lr-5e-05-lw-0.5-nb-400-rd-0.9',
+'phi-0-set-wbc2_1024x1024-wfpn-False-ep-200-stp-100-bz-8-snap-imagenet-cls-4-valid-True-aug-False-bstrp-4-lr-5e-05-lw-0.5-nb-400-rd-0.9',
 ],
  # wbc5_1024x1024
 'wbc5_1024x1024':[
 'phi-0-set-wbc5_1024x1024-wfpn-False-ep-200-stp-100-bz-8-snap-imagenet-cls-4-valid-True-aug-False-bstrp-0-lr-5e-05-lw-0.5-nb-400-rd-0.9',
 'phi-0-set-wbc5_1024x1024-wfpn-False-ep-200-stp-100-bz-8-snap-imagenet-cls-4-valid-True-aug-False-bstrp-1-lr-5e-05-lw-0.5-nb-400-rd-0.9',
-'phi-0-set-wbc5_1024x1024-wfpn-False-ep-200-stp-100-bz-8-snap-imagenet-cls-4-valid-True-aug-False-bstrp-2-lr-5e-05-lw-0.5-nb-400-rd-0.9',
-'phi-0-set-wbc5_1024x1024-wfpn-False-ep-200-stp-100-bz-8-snap-imagenet-cls-4-valid-True-aug-False-bstrp-3-lr-5e-05-lw-0.5-nb-400-rd-0.9',
+'phi-0-set-wbc5_1024x1024-wfpn-False-ep-200-stp-100-bz-16-snap-imagenet-cls-4-valid-True-aug-False-bstrp-2-lr-5e-05-lw-0.5-nb-400-rd-0.9',
+'phi-0-set-wbc5_1024x1024-wfpn-False-ep-200-stp-100-bz-16-snap-imagenet-cls-4-valid-True-aug-False-bstrp-3-lr-5e-05-lw-0.5-nb-400-rd-0.9',
+'phi-0-set-wbc5_1024x1024-wfpn-False-ep-200-stp-100-bz-16-snap-imagenet-cls-4-valid-True-aug-False-bstrp-4-lr-5e-05-lw-0.5-nb-400-rd-0.9',
 ]
 }
+
+# non_cv_models = {
+# 'wbc_1024x1024':[
+# 'phi-0-set-wbc_1024x1024-wfpn-False-ep-200-stp-100-bz-8-snap-imagenet-cls-4-valid-True-aug-True-bstrp-0-lr-5e-05-lw-0.5-nb-400-rd-0.8',
+# 'phi-0-set-wbc_1024x1024-wfpn-False-ep-200-stp-100-bz-8-snap-imagenet-cls-4-valid-True-aug-True-bstrp-1-lr-5e-05-lw-0.5-nb-400-rd-0.8',
+# 'phi-0-set-wbc_1024x1024-wfpn-False-ep-200-stp-100-bz-8-snap-imagenet-cls-4-valid-True-aug-True-bstrp-2-lr-5e-05-lw-0.5-nb-400-rd-0.8',
+# 'phi-0-set-wbc_1024x1024-wfpn-False-ep-200-stp-100-bz-8-snap-imagenet-cls-4-valid-True-aug-True-bstrp-3-lr-5e-05-lw-0.5-nb-400-rd-0.8',
+# 'phi-0-set-wbc_1024x1024-wfpn-False-ep-200-stp-100-bz-8-snap-imagenet-cls-4-valid-True-aug-True-bstrp-4-lr-5e-05-lw-0.5-nb-400-rd-0.8',
+# ],
+# # wbc2_1024x1024
+# 'wbc2_1024x1024':[
+# # 'phi-0-set-wbc2_1024x1024-wfpn-False-ep-200-stp-100-bz-8-snap-imagenet-cls-4-valid-True-aug-False-bstrp-0-lr-5e-05-lw-0.5-nb-400-rd-0.9',
+# # 'phi-0-set-wbc2_1024x1024-wfpn-False-ep-200-stp-100-bz-8-snap-imagenet-cls-4-valid-True-aug-False-bstrp-1-lr-5e-05-lw-0.5-nb-400-rd-0.9',
+# # 'phi-0-set-wbc2_1024x1024-wfpn-False-ep-200-stp-100-bz-8-snap-imagenet-cls-4-valid-True-aug-False-bstrp-2-lr-5e-05-lw-0.5-nb-400-rd-0.9',
+# # 'phi-0-set-wbc2_1024x1024-wfpn-False-ep-200-stp-100-bz-8-snap-imagenet-cls-4-valid-True-aug-False-bstrp-3-lr-5e-05-lw-0.5-nb-400-rd-0.9',
+# # 'phi-0-set-wbc2_1024x1024-wfpn-False-ep-200-stp-100-bz-8-snap-imagenet-cls-4-valid-True-aug-False-bstrp-4-lr-5e-05-lw-0.5-nb-400-rd-0.9',
+# 'phi-0-set-wbc2_1024x1024-wfpn-False-ep-200-stp-100-bz-8-snap-imagenet-cls-4-valid-True-aug-True-bstrp-0-lr-5e-05-lw-0.5-nb-400-rd-0.8',
+# 'phi-0-set-wbc2_1024x1024-wfpn-False-ep-200-stp-100-bz-8-snap-imagenet-cls-4-valid-True-aug-True-bstrp-1-lr-5e-05-lw-0.5-nb-400-rd-0.8',
+# 'phi-0-set-wbc2_1024x1024-wfpn-False-ep-200-stp-100-bz-8-snap-imagenet-cls-4-valid-True-aug-True-bstrp-2-lr-5e-05-lw-0.5-nb-400-rd-0.8',
+# 'phi-0-set-wbc2_1024x1024-wfpn-False-ep-200-stp-100-bz-8-snap-imagenet-cls-4-valid-True-aug-True-bstrp-3-lr-5e-05-lw-0.5-nb-400-rd-0.8',
+# 'phi-0-set-wbc2_1024x1024-wfpn-False-ep-200-stp-100-bz-8-snap-imagenet-cls-4-valid-True-aug-True-bstrp-4-lr-5e-05-lw-0.5-nb-400-rd-0.8',
+# ],
+#  # wbc5_1024x1024
+# 'wbc5_1024x1024':[
+# 'phi-0-set-wbc5_1024x1024-wfpn-False-ep-200-stp-100-bz-8-snap-imagenet-cls-4-valid-True-aug-False-bstrp-0-lr-5e-05-lw-0.5-nb-400-rd-0.8',
+# 'phi-0-set-wbc5_1024x1024-wfpn-False-ep-200-stp-100-bz-8-snap-imagenet-cls-4-valid-True-aug-False-bstrp-1-lr-5e-05-lw-0.5-nb-400-rd-0.8',
+# 'phi-0-set-wbc5_1024x1024-wfpn-False-ep-200-stp-100-bz-8-snap-imagenet-cls-4-valid-True-aug-False-bstrp-2-lr-5e-05-lw-0.5-nb-400-rd-0.8',
+# 'phi-0-set-wbc5_1024x1024-wfpn-False-ep-200-stp-100-bz-8-snap-imagenet-cls-4-valid-True-aug-False-bstrp-3-lr-5e-05-lw-0.5-nb-400-rd-0.8',
+# 'phi-0-set-wbc5_1024x1024-wfpn-False-ep-200-stp-100-bz-8-snap-imagenet-cls-4-valid-True-aug-False-bstrp-4-lr-5e-05-lw-0.5-nb-400-rd-0.8',
+# # 'phi-0-set-wbc5_1024x1024-wfpn-False-ep-200-stp-100-bz-8-snap-imagenet-cls-4-valid-True-aug-True-bstrp-0-lr-5e-05-lw-0.5-nb-400-rd-0.8',
+# # 'phi-0-set-wbc5_1024x1024-wfpn-False-ep-200-stp-100-bz-8-snap-imagenet-cls-4-valid-True-aug-True-bstrp-1-lr-5e-05-lw-0.5-nb-400-rd-0.8',
+# # 'phi-0-set-wbc5_1024x1024-wfpn-False-ep-200-stp-100-bz-8-snap-imagenet-cls-4-valid-True-aug-True-bstrp-2-lr-5e-05-lw-0.5-nb-400-rd-0.8',
+# # 'phi-0-set-wbc5_1024x1024-wfpn-False-ep-200-stp-100-bz-8-snap-imagenet-cls-4-valid-True-aug-True-bstrp-3-lr-5e-05-lw-0.5-nb-400-rd-0.8',
+# # 'phi-0-set-wbc5_1024x1024-wfpn-False-ep-200-stp-100-bz-8-snap-imagenet-cls-4-valid-True-aug-True-bstrp-4-lr-5e-05-lw-0.5-nb-400-rd-0.8',
+# ]
+# }
 
 cls4_label_map = {'neutrophils': 0, 'eosinophils': 1, 'lymphocytes': 2, 'monocytes': 3}
 cls5_label_map = {'neutrophils': 0, 'bands': 1, 'eosinophils': 2, 'lymphocytes': 3, 'monocytes': 4}
